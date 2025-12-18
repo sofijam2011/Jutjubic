@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #5F7161;
     padding: 20px;
 }
 
@@ -13,12 +13,12 @@
     padding: 40px;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(95, 113, 97, 0.3);
 }
 
 .auth-card h2 {
     text-align: center;
-    color: #333;
+    color: #5F7161;
     margin-bottom: 30px;
     font-size: 28px;
 }
@@ -47,24 +47,32 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #5F7161;
 }
 
 .form-group input.error {
-    border-color: #e74c3c;
+    border-color: #6D8B74;
 }
 
-/* Tamno crvena slova za lozinku */
+/* Tamno zelena slova za lozinku */
 .password-input {
-    color: #8b0000 !important;
+    color: #3A4D39 !important;
     font-weight: 500;
 }
 
 .error-message {
     display: block;
-    color: #e74c3c;
+    color: #6D8B74;
     font-size: 12px;
     margin-top: 5px;
+}
+
+.password-hint {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+    font-style: italic;
 }
 
 .message {
@@ -89,7 +97,7 @@
 .btn-primary {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #5F7161;
     color: white;
     border: none;
     border-radius: 5px;
@@ -100,8 +108,9 @@
 }
 
 .btn-primary:hover:not(:disabled) {
+    background: #4A5A4C;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(95, 113, 97, 0.4);
 }
 
 .btn-primary:disabled {
@@ -117,7 +126,7 @@
 }
 
 .auth-footer a {
-    color: #667eea;
+    color: #5F7161;
     text-decoration: none;
     font-weight: 600;
 }
