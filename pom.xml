@@ -92,6 +92,19 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+        <!-- Dodaj ovo u tvoj postojeći pom.xml u <dependencies> sekciju -->
+
+        <!-- Cache (za keširanje thumbnails) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!-- Caffeine Cache -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
 
     </dependencies>
 

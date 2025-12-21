@@ -1,0 +1,87 @@
+.navbar {
+    padding: 15px 40px;
+    background: #5F7161;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+    color: white;
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-logo:hover {
+    opacity: 0.8;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.navbar-user {
+    color: white;
+    font-size: 14px;
+}
+
+.navbar-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.navbar-btn.home {
+    background-color: transparent;
+    border: 2px solid white;
+}
+
+.navbar-btn.home:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-btn.upload {
+    background-color: #ff4d4f;
+}
+
+.navbar-btn.upload:hover {
+    background-color: #ff3333;
+}
+
+.navbar-btn.logout {
+    background-color: transparent;
+    border: 2px solid white;
+}
+
+.navbar-btn.logout:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .navbar-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .navbar-user {
+        width: 100%;
+        text-align: center;
+    }
+}

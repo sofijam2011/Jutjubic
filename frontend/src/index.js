@@ -5,10 +5,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// ISKLJUČEN StrictMode da bi sprečili dupli useEffect poziv u development mode-u
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>  ← ZAKOMENTIRAJ OVO
     <App />
-  </React.StrictMode>
+  // </React.StrictMode>  ← ZAKOMENTIRAJ OVO
 );
 
 // If you want to start measuring performance in your app, pass a function

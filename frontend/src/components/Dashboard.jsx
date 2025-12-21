@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import VideoList from './VideoList';
 import authService from '../services/authService';
+import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -12,20 +14,46 @@ const Dashboard = () => {
     };
 
     return (
-        <div style={{ padding: '40px', textAlign: 'center' }}>
-            <h1>Dobrodošli, {user?.username}!</h1>
-            <p>Uspešno ste prijavljeni na sistem.</p>
-            <button onClick={handleLogout} style={{
-                padding: '10px 20px',
-                marginTop: '20px',
-                backgroundColor: '#e74c3c',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-            }}>
-                Odjavi se
-            </button>
+        <div className="dashboard-container">
+            {/* Navigation Bar */}
+            <nav className="dashboard-navbar">
+                <h1
+                    className="dashboard-logo"
+                    onClick={() => navigate('/dashboard')}
+                >
+                    🎥 Jutjubic
+                </h1>
+
+                <div className="dashboard-nav-links">
+                    <button
+                        className="nav-btn home-btn"
+                        onClick={() => navigate('/dashboard')}
+                    >
+                        🏠 Početna
+                    </button>
+
+                    <span className="nav-username">
+                        👤 {user?.username}
+                    </span>
+
+                    <button
+                        className="nav-btn upload-btn"
+                        onClick={() => navigate('/upload')}
+                    >
+                        🎥 Postavi Video
+                    </button>
+
+                    <button
+                        className="nav-btn logout-btn"
+                        onClick={handleLogout}
+                    >
+                        🚪 Odjavi se
+                    </button>
+                </div>
+            </nav>
+
+            {/* Video List */}
+            <VideoList />
         </div>
     );
 };

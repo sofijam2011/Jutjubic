@@ -1,0 +1,123 @@
+.dashboard-container {
+    min-height: 100vh;
+    background: #5F7161;
+}
+
+/* ==================== NAVBAR ==================== */
+.dashboard-navbar {
+    padding: 15px 40px;
+    background: #4A5A4C;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.dashboard-logo {
+    color: white;
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.dashboard-logo:hover {
+    opacity: 0.8;
+}
+
+.dashboard-nav-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-username {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 10px;
+}
+
+/* ==================== BUTTONS ==================== */
+.nav-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.home-btn,
+.logout-btn {
+    background-color: transparent;
+    border: 2px solid white;
+}
+
+.home-btn:hover,
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.upload-btn {
+    padding: 12px 24px;
+    background-color: #ff4d4f;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+}
+
+.upload-btn:hover {
+    background-color: #ff3333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 77, 79, 0.5);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 968px) {
+    .dashboard-navbar {
+        padding: 10px 20px;
+    }
+    
+    .dashboard-logo {
+        font-size: 22px;
+    }
+    
+    .dashboard-nav-links {
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+    
+    .upload-btn {
+        padding: 10px 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
+    .dashboard-nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .nav-username {
+        width: 100%;
+        text-align: center;
+    }
+}
