@@ -14,60 +14,65 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    private final Path fileStorageLocation;
+    @Value("${file.upload-dir:./uploads}")
+    private String uploadDir;
 
-    public FileStorageService(@Value("${file.upload-dir:./uploads}") String uploadDir) {
-        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+    public String storeThumbnail(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Cannot store empty file");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                : ".jpg";
+
+        String filename = "thumb_" + UUID.randomUUID() + extension;
+
+        Path thumbnailDir = Paths.get(uploadDir, "thumbnails");
+        Files.createDirectories(thumbnailDir);
+
+        Path destinationPath = thumbnailDir.resolve(filename);
+        Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+        return destinationPath.toString();
+    }
+
+    public String storeVideo(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Cannot store empty file");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".mp4")) {
+            throw new IllegalArgumentException("Only MP4 videos are allowed");
+        }
+
+        long maxSize = 200 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("Video size exceeds 200MB limit");
+        }
+
+        String filename = "video_" + UUID.randomUUID() + ".mp4";
+
+        Path videoDir = Paths.get(uploadDir, "videos");
+        Files.createDirectories(videoDir);
+
+        Path destinationPath = videoDir.resolve(filename);
+        Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+        return destinationPath.toString();
+    }
+
+    public byte[] loadThumbnail(String thumbnailPath) {
         try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not create upload directory", ex);
-        }
-    }
-
-    public String storeThumbnail(MultipartFile file) {
-        return storeFile(file, "thumbnails");
-    }
-
-    public String storeVideo(MultipartFile file) {
-        // Check file size (max 200MB)
-        if (file.getSize() > 200 * 1024 * 1024) {
-            throw new RuntimeException("File size exceeds maximum limit of 200MB");
-        }
-
-        // Check format
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.equals("video/mp4")) {
-            throw new RuntimeException("Only MP4 format is supported");
-        }
-
-        return storeFile(file, "videos");
-    }
-
-    private String storeFile(MultipartFile file, String subfolder) {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
-        try {
-            Path targetLocation = this.fileStorageLocation.resolve(subfolder).resolve(fileName);
-            Files.createDirectories(targetLocation.getParent());
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return subfolder + "/" + fileName;
-        } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + fileName, ex);
-        }
-    }
-
-    public byte[] loadThumbnail(String filePath) {
-        try {
-            Path file = fileStorageLocation.resolve(filePath);
-            return Files.readAllBytes(file);
-        } catch (IOException ex) {
-            throw new RuntimeException("Could not read file " + filePath, ex);
+            Path path = Paths.get(thumbnailPath);
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read thumbnail file: " + e.getMessage());
         }
     }
 
     public void deleteAllFiles() {
-        // Implementation for rollback
-        // You can implement this later if needed
     }
 }

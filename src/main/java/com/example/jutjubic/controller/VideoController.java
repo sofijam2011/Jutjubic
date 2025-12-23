@@ -2,6 +2,7 @@ package com.example.jutjubic.controller;
 
 import com.example.jutjubic.dto.VideoResponse;
 import com.example.jutjubic.model.User;
+import com.example.jutjubic.model.Video;
 import com.example.jutjubic.repository.UserRepository;
 import com.example.jutjubic.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/videos")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class VideoController {
 
     @Autowired
@@ -31,34 +33,48 @@ public class VideoController {
     private UserRepository userRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<VideoResponse> uploadVideo(
+    public ResponseEntity<?> uploadVideo(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam(value = "tags", required = false) List<String> tags,
+            @RequestParam(value = "tags", required = false) String tagsString,
             @RequestParam("thumbnail") MultipartFile thumbnail,
             @RequestParam("video") MultipartFile video,
             @RequestParam(value = "location", required = false) String location,
             Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        try {
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(401).body("Unauthorized");
+            }
 
-        var uploadedVideo = videoService.uploadVideo(title, description, tags,
-                thumbnail, video, location, user);
-        var response = videoService.getVideoById(uploadedVideo.getId());
-        return ResponseEntity.ok(response);
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            List<String> tags = tagsString != null ?
+                    Arrays.asList(tagsString.split(",")) :
+                    List.of();
+
+            Video uploadedVideo = videoService.uploadVideo(
+                    title, description, tags, thumbnail, video, location, user
+            );
+
+            return ResponseEntity.ok(uploadedVideo);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Upload failed: " + e.getMessage());
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<VideoResponse>> getAllVideos() {
-        List<VideoResponse> videos = videoService.getAllVideos();
-        return ResponseEntity.ok(videos);
+        return ResponseEntity.ok(videoService.getAllVideos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VideoResponse> getVideo(@PathVariable Long id) {
-        VideoResponse video = videoService.getVideoById(id);
-        return ResponseEntity.ok(video);
+    public ResponseEntity<VideoResponse> getVideoById(@PathVariable Long id) {
+        return ResponseEntity.ok(videoService.getVideoById(id));
     }
 
     @PostMapping("/{id}/view")
@@ -69,39 +85,44 @@ public class VideoController {
 
     @GetMapping("/{id}/thumbnail")
     public ResponseEntity<byte[]> getThumbnail(@PathVariable Long id) {
-        byte[] thumbnail = videoService.getThumbnail(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(thumbnail);
+        try {
+            byte[] thumbnail = videoService.getThumbnail(id);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(thumbnail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    /**
-     * STREAMING ENDPOINT - Sa CORS headers!
-     * Omogućava gledanje videa direktno u browseru
-     */
     @GetMapping("/{id}/stream")
     public ResponseEntity<Resource> streamVideo(@PathVariable Long id) {
         try {
-            // Dobavi informacije o videu
             VideoResponse videoResponse = videoService.getVideoById(id);
+            String videoPath = videoResponse.getVideoPath();
 
-            // Učitaj video fajl
-            Path videoPath = Paths.get("./uploads").resolve(videoResponse.getVideoPath());
-            Resource resource = new UrlResource(videoPath.toUri());
+            System.out.println("Streaming video from path: " + videoPath);
 
-            if (!resource.exists() || !resource.isReadable()) {
+            File videoFile = new File(videoPath);
+            if (!videoFile.exists()) {
+                System.err.println("Video file not found at: " + videoPath);
                 return ResponseEntity.notFound().build();
             }
 
-            // Vrati video sa odgovarajućim headerima za streaming + CORS
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("video/mp4"))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                    .header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000")
-                    .header(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")
-                    .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
-                    .body(resource);
+            Path path = Paths.get(videoPath);
+            Resource resource = new UrlResource(path.toUri());
 
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType("video/mp4"))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                System.err.println("Video file exists but not readable: " + videoPath);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

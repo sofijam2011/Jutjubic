@@ -120,4 +120,12 @@
         width: 100%;
         text-align: center;
     }
+
+    .dashboard-content .video-list {
+        margin-top: 0;
+    }
+
+    .dashboard-content .video-card {
+        height: fit-content;
+    }
 }

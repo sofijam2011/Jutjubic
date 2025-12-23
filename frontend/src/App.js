@@ -5,20 +5,13 @@ import Login from './components/Login';
 import EmailVerification from './components/EmailVerification';
 import Dashboard from './components/Dashboard';
 import VideoUpload from './components/VideoUpload';
-import VideoList from './components/VideoList';
 import VideoPlayer from './components/VideoPlayer';
-import authService from './services/authService';
+import UserProfile from './components/UserProfile';
+import HomePage from './components/HomePage';
 
-// Protected Route komponenta - štiti rute koje zahtevaju autentifikaciju
-const ProtectedRoute = ({ children }) => {
-    const token = authService.getToken();
-    return token ? children : <Navigate to="/login" />;
-};
-
-// Public Route - redirektuje na dashboard ako je već ulogovan
-const PublicRoute = ({ children }) => {
-    const token = authService.getToken();
-    return token ? <Navigate to="/dashboard" /> : children;
+const PrivateRoute = ({ children }) => {
+    const isAuthenticated = !!localStorage.getItem('token');
+    return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 function App() {
@@ -26,71 +19,30 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    {/* Početna stranica - redirektuje na login ako nije ulogovan */}
-                    <Route
-                        path="/"
-                        element={
-                            authService.getToken()
-                                ? <Navigate to="/dashboard" />
-                                : <Navigate to="/login" />
-                        }
-                    />
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/verify-email" element={<EmailVerification />} />
+                    <Route path="/video/:id" element={<VideoPlayer />} />
+                    <Route path="/user/:id" element={<UserProfile />} />
 
-                    {/* Javne rute - dostupne samo ne-ulogovanim korisnicima */}
-                    <Route
-                        path="/register"
-                        element={
-                            <PublicRoute>
-                                <Register />
-                            </PublicRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/login"
-                        element={
-                            <PublicRoute>
-                                <Login />
-                            </PublicRoute>
-                        }
-                    />
-
-                    <Route path="/verify" element={<EmailVerification />} />
-
-                    {/* Zaštićene rute - samo za prijavljene korisnike */}
                     <Route
                         path="/dashboard"
                         element={
-                            <ProtectedRoute>
+                            <PrivateRoute>
                                 <Dashboard />
-                            </ProtectedRoute>
+                            </PrivateRoute>
                         }
                     />
 
                     <Route
                         path="/upload"
                         element={
-                            <ProtectedRoute>
+                            <PrivateRoute>
                                 <VideoUpload />
-                            </ProtectedRoute>
+                            </PrivateRoute>
                         }
                     />
-
-                    {/* VIDEO PLAYER - Nova ruta za gledanje videa */}
-                    <Route
-                        path="/watch/:id"
-                        element={
-                            <ProtectedRoute>
-                                <VideoPlayer />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Lista videa - dostupna svima */}
-                    <Route path="/videos" element={<VideoList />} />
-
-                    {/* Catch all - nepostojeće rute */}
-                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </div>
         </Router>

@@ -1,286 +1,258 @@
 .video-player-container {
     min-height: 100vh;
-    background: #5F7161;
-    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 0;
 }
 
 .video-player-nav {
-    max-width: 1200px;
-    margin: 0 auto 20px;
+    background-color: #5F7161;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .btn-back {
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem 1.5rem;
+    background-color: #4A5A4C;
     color: white;
-    border: 2px solid white;
-    border-radius: 5px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .btn-back:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    transform: translateX(-5px);
+    background-color: #3A4A3C;
+    transform: translateY(-2px);
 }
 
-.loading,
-.error {
-    text-align: center;
-    padding: 40px;
-    color: white;
-    font-size: 18px;
-}
-
-.error {
-    color: #ffcccc;
-}
-
-/* Video Player Wrapper */
 .video-player-wrapper {
     max-width: 1200px;
-    margin: 0 auto 30px;
-    background: black;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    margin: 2rem auto;
+    padding: 0 2rem;
 }
 
 .video-element {
     width: 100%;
     max-height: 70vh;
-    display: block;
-    outline: none;
+    background-color: #000;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
-/* Video Info Section */
 .video-info-section {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
     background: white;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    border-radius: 12px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .video-title {
-    font-size: 28px;
+    font-size: 1.8rem;
+    margin: 0 0 1rem 0;
     color: #333;
-    margin: 0 0 15px 0;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .video-meta {
     display: flex;
-    gap: 20px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #e1e1e1;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+    align-items: center;
 }
 
 .video-author {
-    color: #5F7161;
-    font-weight: 600;
-    font-size: 16px;
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.3s;
 }
 
-.video-views,
+.video-author:hover {
+    color: #5568d3;
+    text-decoration: underline;
+}
+
+.video-views {
+    color: #666;
+    font-size: 1rem;
+}
+
 .video-location {
     color: #666;
-    font-size: 14px;
+    font-size: 1rem;
 }
 
-/* LIKE BUTTON */
 .video-actions {
-    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 .like-btn {
-    padding: 12px 24px;
-    background: white;
-    border: 2px solid #e1e1e1;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
     border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
+    font-size: 1.1rem;
     font-weight: 600;
-    transition: all 0.3s ease;
-    color: #666;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .like-btn:hover {
-    transform: scale(1.05);
-    border-color: #ff4d4f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .like-btn.liked {
-    background: #ffe0e0;
-    border-color: #ff4d4f;
-    color: #ff4d4f;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.like-btn.liked:hover {
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+}
+
+.auth-notice {
+    color: #ff9800;
+    font-size: 0.95rem;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .video-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin: 15px 0;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 .tag {
-    background-color: #e0e0e0;
-    padding: 6px 14px;
-    border-radius: 15px;
-    font-size: 13px;
-    color: #555;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
 .video-description {
-    margin-top: 20px;
+    margin-top: 1.5rem;
 }
 
 .video-description h3 {
-    font-size: 18px;
+    font-size: 1.3rem;
+    margin: 0 0 1rem 0;
     color: #333;
-    margin-bottom: 10px;
+    font-weight: 600;
 }
 
 .video-description p {
     color: #666;
     line-height: 1.6;
-    font-size: 15px;
-}
-
-/* COMMENTS SECTION */
-.comments-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.comments-section h3 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* Comment Form */
-.comment-form {
-    margin-bottom: 30px;
-}
-
-.comment-input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e1e1e1;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-    transition: border-color 0.3s ease;
-}
-
-.comment-input:focus {
-    outline: none;
-    border-color: #5F7161;
-}
-
-.comment-submit-btn {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background: #5F7161;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.comment-submit-btn:hover:not(:disabled) {
-    background: #4A5A4C;
-    transform: translateY(-2px);
-}
-
-.comment-submit-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Comments List */
-.comments-list {
-    margin-top: 20px;
-}
-
-.no-comments {
-    color: #999;
-    font-style: italic;
-    text-align: center;
-    padding: 20px;
-}
-
-.comment {
-    padding: 15px;
-    border-bottom: 1px solid #e1e1e1;
-    margin-bottom: 15px;
-}
-
-.comment:last-child {
-    border-bottom: none;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.comment-author {
-    font-weight: 600;
-    color: #5F7161;
-    font-size: 14px;
-}
-
-.comment-date {
-    font-size: 12px;
-    color: #999;
-}
-
-.comment-text {
-    color: #333;
-    line-height: 1.5;
-    font-size: 14px;
+    font-size: 1rem;
     margin: 0;
+    white-space: pre-wrap;
 }
 
-/* Responsive */
+.loading, .error {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.error {
+    background: rgba(231, 76, 60, 0.2);
+    border-radius: 12px;
+    margin: 2rem;
+    padding: 2rem;
+}
+
 @media (max-width: 768px) {
-    .video-player-container {
-        padding: 10px;
+    .video-player-wrapper {
+        padding: 0 1rem;
+        margin: 1rem auto;
+    }
+
+    .video-info-section {
+        padding: 1.5rem;
+        margin: 1rem;
     }
 
     .video-title {
-        font-size: 22px;
+        font-size: 1.4rem;
     }
 
     .video-meta {
         flex-direction: column;
-        gap: 10px;
+        gap: 0.75rem;
+        align-items: flex-start;
     }
 
-    .video-info-section,
-    .comments-section {
-        padding: 20px;
+    .video-actions {
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .like-btn {
         width: 100%;
+        text-align: center;
+    }
+
+    .auth-notice {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .video-tags {
+        gap: 0.5rem;
+    }
+
+    .tag {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-player-nav {
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-back {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .video-title {
+        font-size: 1.2rem;
+    }
+
+    .video-element {
+        border-radius: 8px;
+    }
+
+    .video-info-section {
+        border-radius: 8px;
+        padding: 1rem;
     }
 }

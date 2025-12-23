@@ -28,7 +28,7 @@ const VideoList = () => {
     const handleVideoClick = (videoId) => {
         // SAMO navigiraj - NE uvećavaj view count ovde!
         // View count će se uvećati kada se učita VideoPlayer
-        navigate(`/watch/${videoId}`);
+        navigate(`/video/${videoId}`);
     };
 
     if (loading) {
@@ -65,11 +65,13 @@ const VideoList = () => {
                         >
                             <div className="video-card-header">
                                 <img
-                                    src={videoService.getThumbnailUrl(video.id)}
+                                    src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
                                     alt={video.title}
-                                    className="video-thumbnail"
                                     onError={(e) => {
-                                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Thumbnail';
+                                        e.target.onerror = null;
+                                        e.target.style.display = 'none';
+                                        e.target.parentElement.style.backgroundColor = '#f0f0f0';
+                                        e.target.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px;">No Thumbnail</div>';
                                     }}
                                 />
                                 <div className="live-indicator">●</div>

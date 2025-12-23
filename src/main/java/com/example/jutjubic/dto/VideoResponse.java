@@ -14,6 +14,7 @@ public class VideoResponse {
     private Long viewCount;
     private String location;
     private List<String> tags;
+    private Long userId;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -45,4 +46,7 @@ public class VideoResponse {
 
     public List<String> getTags() { return tags; }
     public void setTags(List<String> tags) { this.tags = tags; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 }

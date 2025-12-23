@@ -9,8 +9,9 @@ const Dashboard = () => {
     const user = authService.getCurrentUser();
 
     const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/'); // Idi na HomePage umesto /login
     };
 
     return (

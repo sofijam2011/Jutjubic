@@ -127,6 +127,14 @@ public class VideoService {
         response.setTags(video.getTags().stream()
                 .map(Tag::getName)
                 .collect(Collectors.toList()));
+        response.setUserId(video.getUser().getId());
         return response;
+    }
+
+    public List<VideoResponse> getVideosByUserId(Long userId) {
+        return videoRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(this::toVideoResponse)
+                .collect(Collectors.toList());
     }
 }
