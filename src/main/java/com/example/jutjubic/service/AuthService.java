@@ -66,7 +66,6 @@ public class AuthService {
         emailService.sendVerificationEmail(user.getEmail(), token);
     }
 
-    @Transactional
     public AuthResponse login(LoginRequest request, String ipAddress) {
         // Provera rate limiting-a
         if (loginAttemptService.isBlocked(ipAddress)) {
@@ -74,11 +73,19 @@ public class AuthService {
         }
 
         // Provera korisnika
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> {
-                    loginAttemptService.recordLoginAttempt(ipAddress, false);
-                    return new RuntimeException("Neispravni kredencijali");
-                });
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+
+        // Ako ne postoji baci error
+        if (user == null) {
+            loginAttemptService.recordLoginAttempt(ipAddress, false);
+            throw new RuntimeException("Neispravni kredencijali");
+        }
+
+        // Ako lozinka nije tacna baci error
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            loginAttemptService.recordLoginAttempt(ipAddress, false);
+            throw new RuntimeException("Neispravni kredencijali");
+        }
 
         // Provera lozinke
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
