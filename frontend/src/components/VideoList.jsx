@@ -65,13 +65,11 @@ const VideoList = () => {
                         >
                             <div className="video-card-header">
                                 <img
-                                    src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
+                                    src={videoService.getThumbnailUrl(video.id)}
                                     alt={video.title}
+                                    className="video-thumbnail"
                                     onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.style.display = 'none';
-                                        e.target.parentElement.style.backgroundColor = '#f0f0f0';
-                                        e.target.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px;">No Thumbnail</div>';
+                                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Thumbnail';
                                     }}
                                 />
                                 <div className="live-indicator">●</div>
@@ -80,7 +78,7 @@ const VideoList = () => {
                             <div className="video-info">
                                 <h3>{video.title}</h3>
                                 <p className="video-author">@{video.username}</p>
-                                <p className="video-views">👁️ {video.viewCount} pregleda</p>
+                                <p className="video-views">👁{video.viewCount} pregleda</p>
 
                                 {video.tags && video.tags.length > 0 && (
                                     <div className="video-tags">

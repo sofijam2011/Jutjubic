@@ -34,7 +34,12 @@ public class LoginAttemptService {
         List<LoginAttempt> recentAttempts = loginAttemptRepository
                 .findRecentAttemptsByIp(ipAddress, oneMinuteAgo);
 
-        return recentAttempts.size() >= MAX_ATTEMPTS;
+        // Broji samo neuspešne
+        long failedAttempts = recentAttempts.stream()
+                .filter(attempt -> !attempt.isSuccessful())
+                .count();
+
+        return failedAttempts >= MAX_ATTEMPTS;
     }
 
     @Scheduled(fixedRate = 3600000) // Čisti svaki sat

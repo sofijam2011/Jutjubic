@@ -23,6 +23,16 @@
     font-weight: bold;
     cursor: pointer;
     transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    height: 45px;
+    width: 55px;
+    border-radius: 6px;
+    object-fit: cover;
 }
 
 .dashboard-logo:hover {
@@ -37,46 +47,41 @@
 
 .nav-username {
     color: white;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 500;
     padding: 0 10px;
 }
 
 /* ==================== BUTTONS ==================== */
 .nav-btn {
-    padding: 10px 20px;
-    color: white;
+    padding: 12px 24px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.home-btn,
-.logout-btn {
-    background-color: transparent;
-    border: 2px solid white;
-}
-
-.home-btn:hover,
-.logout-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
+    color: white;
 }
 
 .upload-btn {
-    padding: 12px 24px;
     background-color: #ff4d4f;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
 }
 
 .upload-btn:hover {
-    background-color: #ff3333;
+    background-color: #e63946;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 77, 79, 0.5);
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -84,21 +89,16 @@
     .dashboard-navbar {
         padding: 10px 20px;
     }
-    
+
     .dashboard-logo {
         font-size: 22px;
     }
-    
+
     .dashboard-nav-links {
         gap: 10px;
     }
-    
+
     .nav-btn {
-        padding: 8px 15px;
-        font-size: 13px;
-    }
-    
-    .upload-btn {
         padding: 10px 18px;
     }
 }
@@ -109,13 +109,13 @@
         gap: 15px;
         padding: 15px 20px;
     }
-    
+
     .dashboard-nav-links {
         flex-wrap: wrap;
         justify-content: center;
         width: 100%;
     }
-    
+
     .nav-username {
         width: 100%;
         text-align: center;
