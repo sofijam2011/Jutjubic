@@ -78,7 +78,7 @@ const VideoList = () => {
                             <div className="video-info">
                                 <h3>{video.title}</h3>
                                 <p className="video-author">@{video.username}</p>
-                                <p className="video-views">👁️ {video.viewCount} pregleda</p>
+                                <p className="video-views">👁{video.viewCount} pregleda</p>
 
                                 {video.tags && video.tags.length > 0 && (
                                     <div className="video-tags">

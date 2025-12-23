@@ -21,33 +21,33 @@ const Dashboard = () => {
                     className="dashboard-logo"
                     onClick={() => navigate('/dashboard')}
                 >
-                    🎥 Jutjubic
+                    <img
+                        src="/harmonika.png"
+                        alt="Jutjubic"
+                        className="logo-icon"
+                        width={45}
+                        height={45}
+                    />
+                    Jutjubic
                 </h1>
 
                 <div className="dashboard-nav-links">
-                    <button
-                        className="nav-btn home-btn"
-                        onClick={() => navigate('/dashboard')}
-                    >
-                        🏠 Početna
-                    </button>
-
                     <span className="nav-username">
-                        👤 {user?.username}
+                        {user?.username}
                     </span>
 
                     <button
                         className="nav-btn upload-btn"
                         onClick={() => navigate('/upload')}
                     >
-                        🎥 Postavi Video
+                        Postavi Video
                     </button>
 
                     <button
                         className="nav-btn logout-btn"
                         onClick={handleLogout}
                     >
-                        🚪 Odjavi se
+                        Odjavi se
                     </button>
                 </div>
             </nav>

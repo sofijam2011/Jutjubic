@@ -103,7 +103,7 @@ const VideoUpload = () => {
                 setProgress(percentCompleted);
             });
 
-            setMessage('Video je uspešno postavljen! 🎉');
+            setMessage('Video je uspešno postavljen!');
             setTimeout(() => {
                 navigate('/dashboard');
             }, 2000);
@@ -118,7 +118,7 @@ const VideoUpload = () => {
     return (
         <div className="upload-container">
             <div className="upload-card">
-                <h2>🎥 Postavi Video</h2>
+                <h2>Postavi Video</h2>
 
                 {error && <div className="message error">{error}</div>}
                 {message && <div className="message success">{message}</div>}
@@ -217,7 +217,7 @@ const VideoUpload = () => {
                         className="upload-btn"
                         disabled={loading}
                     >
-                        {loading ? `Postavljanje... ${progress}%` : '🎬 Postavi Video'}
+                        {loading ? `Postavljanje... ${progress}%` : 'Postavi Video'}
                     </button>
                 </form>
 

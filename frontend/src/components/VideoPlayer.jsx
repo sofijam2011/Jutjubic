@@ -114,9 +114,9 @@ const VideoPlayer = () => {
 
                 <div className="video-meta">
                     <span className="video-author">@{video.username}</span>
-                    <span className="video-views">👁️ {video.viewCount} pregleda</span>
+                    <span className="video-views">👁{video.viewCount} pregleda</span>
                     {video.location && (
-                        <span className="video-location">📍 {video.location}</span>
+                        <span className="video-location">{video.location}</span>
                     )}
                 </div>
 

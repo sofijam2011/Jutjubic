@@ -60,9 +60,8 @@
     opacity: 0.6;
 }
 
-/* Tamno zelena slova za lozinku */
 .password-input {
-    color: #3A4D39 !important;
+    color: #3A4D39;
     font-weight: 500;
 }
 
