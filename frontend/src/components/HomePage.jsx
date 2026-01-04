@@ -34,7 +34,12 @@ const HomePage = () => {
         <div className="homepage-container">
             <nav className="homepage-navbar">
                 <div className="navbar-brand" onClick={() => navigate('/')}>
-                    🎬 Jutjubic
+                    <img
+                        src="/harmonika.png"
+                        alt="Jutjubić"
+                        className="logo-icon"
+                    />
+                    Jutjubić
                 </div>
                 <div className="navbar-actions">
                     {isAuthenticated ? (
@@ -43,19 +48,19 @@ const HomePage = () => {
                                 className="navbar-button upload-button"
                                 onClick={() => navigate('/upload')}
                             >
-                                📤 Upload Video
+                                Upload Video
                             </button>
                             <button
                                 className="navbar-button"
                                 onClick={() => navigate('/dashboard')}
                             >
-                                👤 Profil
+                                Profil
                             </button>
                             <button
                                 className="navbar-button logout-button"
                                 onClick={handleLogout}
                             >
-                                🚪 Odjavi se
+                                Odjavi se
                             </button>
                         </>
                     ) : (
@@ -64,13 +69,13 @@ const HomePage = () => {
                                 className="navbar-button"
                                 onClick={() => navigate('/login')}
                             >
-                                🔑 Prijavi se
+                                Prijavi se
                             </button>
                             <button
                                 className="navbar-button register-button"
                                 onClick={() => navigate('/register')}
                             >
-                                📝 Registruj se
+                                Registruj se
                             </button>
                         </>
                     )}
@@ -79,8 +84,8 @@ const HomePage = () => {
 
             <div className="homepage-content">
                 <div className="welcome-section">
-                    <h1>🎥 Dobrodošli na Jutjubic</h1>
-                    <p>Pogledajte najnovije videe naše zajednice</p>
+                    <h1>Dobro došli na Jutjubić!</h1>
+                    <p>Pogledajte najnovije videe naše zajednice.</p>
                 </div>
 
                 {loading ? (
@@ -110,7 +115,6 @@ const HomePage = () => {
                                         src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
                                     />
-                                    <span className="red-dot">●</span>
                                 </div>
                                 <div className="video-info">
                                     <h3>{video.title}</h3>

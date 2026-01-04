@@ -1,12 +1,12 @@
 package com.example.jutjubic.controller;
 
 import com.example.jutjubic.dto.CommentResponse;
-import com.example.jutjubic.model.Comment;
 import com.example.jutjubic.model.User;
 import com.example.jutjubic.model.Video;
-import com.example.jutjubic.repository.CommentRepository;
 import com.example.jutjubic.repository.UserRepository;
 import com.example.jutjubic.repository.VideoRepository;
+import com.example.jutjubic.service.CommentRateLimitService;
+import com.example.jutjubic.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/videos/{videoId}/comments")
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 public class CommentController {
 
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentService commentService;
 
     @Autowired
     private VideoRepository videoRepository;
@@ -32,21 +30,24 @@ public class CommentController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CommentRateLimitService rateLimitService;
+
     /**
-     * JAVNO DOSTUPAN - Pregled svih komentara za video
+     * JAVNO DOSTUPAN - Pregled komentara sa paginacijom
      * Dostupno i autentifikovanim i neautentifikovanim korisnicima
      */
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long videoId) {
+    public ResponseEntity<Map<String, Object>> getComments(
+            @PathVariable Long videoId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video nije pronađen"));
 
-        List<CommentResponse> comments = commentRepository.findByVideoOrderByCreatedAtDesc(video)
-                .stream()
-                .map(this::toCommentResponse)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(comments);
+        Map<String, Object> response = commentService.getCommentsPaginated(video, page, size);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -74,16 +75,10 @@ public class CommentController {
                     .orElseThrow(() -> new RuntimeException("Video nije pronađen"));
 
             String text = request.get("text");
-            if (text == null || text.trim().isEmpty()) {
-                Map<String, String> error = new HashMap<>();
-                error.put("error", "Komentar ne može biti prazan");
-                return ResponseEntity.badRequest().body(error);
-            }
 
-            Comment comment = new Comment(text, video, user);
-            Comment savedComment = commentRepository.save(comment);
+            CommentResponse comment = commentService.addComment(text, video, user);
+            return ResponseEntity.ok(comment);
 
-            return ResponseEntity.ok(toCommentResponse(savedComment));
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
@@ -99,17 +94,23 @@ public class CommentController {
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video nije pronađen"));
 
-        long count = commentRepository.countByVideo(video);
+        long count = commentService.getCommentCount(video);
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    private CommentResponse toCommentResponse(Comment comment) {
-        return new CommentResponse(
-                comment.getId(),
-                comment.getText(),
-                comment.getUser().getUsername(),
-                comment.getUser().getId(),
-                comment.getCreatedAt()
-        );
+    /**
+     * ZAHTEVA AUTENTIFIKACIJU - Provera preostalog broja komentara
+     */
+    @GetMapping("/rate-limit")
+    public ResponseEntity<Map<String, Integer>> getRateLimitStatus(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen"));
+
+        int remaining = rateLimitService.getRemainingComments(user.getId());
+        return ResponseEntity.ok(Map.of("remainingComments", remaining));
     }
 }

@@ -57,7 +57,7 @@ const Register = () => {
       const hasLowerCase = /[a-z]/.test(formData.password);
       const hasUpperCase = /[A-Z]/.test(formData.password);
       const hasNumber = /[0-9]/.test(formData.password);
-      const hasSpecialChar = /[@#$%^&+=!]/.test(formData.password);
+      const hasSpecialChar = /[@#$%^&+=!/]/.test(formData.password);
 
       if (!hasLowerCase) {
         newErrors.password = 'Lozinka mora sadržati bar jedno malo slovo';
@@ -66,7 +66,7 @@ const Register = () => {
       } else if (!hasNumber) {
         newErrors.password = 'Lozinka mora sadržati bar jedan broj';
       } else if (!hasSpecialChar) {
-        newErrors.password = 'Lozinka mora sadržati bar jedan specijalni karakter (@#$%^&+=!)';
+        newErrors.password = 'Lozinka mora sadržati bar jedan specijalni karakter (@#$%^&+=!/)';
       }
     }
 
@@ -100,6 +100,9 @@ const Register = () => {
       return;
     }
 
+    // DODATO: Ispis podataka u konzolu
+    console.log('Sending registration data:', formData);
+
     setLoading(true);
     setMessage('');
     setErrors({});
@@ -111,14 +114,24 @@ const Register = () => {
         navigate('/login');
       }, 3000);
     } catch (error) {
+      // POBOLJŠAN ERROR HANDLING
+      console.log('Registration error:', error);
+      console.log('Error response:', error.response);
+      console.log('Error data:', error.response?.data);
+
       if (error.response && error.response.data) {
-        if (typeof error.response.data === 'object') {
+        if (typeof error.response.data === 'object' && !error.response.data.error) {
+          // Backend vratio field errors
           setErrors(error.response.data);
         } else if (error.response.data.error) {
+          // Backend vratio error poruku
           setMessage(error.response.data.error);
+        } else {
+          // Nešto drugo - prikažimo raw data
+          setMessage('Greška: ' + JSON.stringify(error.response.data));
         }
       } else {
-        setMessage('Greška pri registraciji. Pokušajte ponovo.');
+        setMessage('Greška pri registraciji. Proverite da li je backend pokrenut.');
       }
     } finally {
       setLoading(false);
@@ -209,7 +222,7 @@ const Register = () => {
               {errors.password && <span className="error-message">{errors.password}</span>}
               <small className="password-hint">
                 Lozinka mora imati najmanje 8 karaktera, jedno malo slovo, jedno veliko slovo,
-                jedan broj i jedan specijalni karakter (@#$%^&+=!)
+                jedan broj i jedan specijalni karakter (@#$%^&+=!/)
               </small>
             </div>
 

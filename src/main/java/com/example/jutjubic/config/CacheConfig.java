@@ -15,7 +15,12 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("thumbnails");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "thumbnails",
+                "comments",
+                "commentCount",
+                "commentRateLimit"
+        );
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(1, TimeUnit.HOURS));

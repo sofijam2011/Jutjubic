@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import videoService from '../services/videoService';
 import './VideoPlayer.css';
+import CommentSection from './CommentSection';
 
 const VideoPlayer = () => {
     const { id } = useParams();
@@ -187,8 +188,11 @@ const VideoPlayer = () => {
                     </div>
                 )}
             </div>
-        </div>
-    );
+
+    {/* Sekcija za komentare */}
+    <CommentSection videoId={id} />
+</div>
+);
 };
 
 export default VideoPlayer;

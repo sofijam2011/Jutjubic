@@ -72,7 +72,7 @@ const VideoList = () => {
                                         e.target.src = 'https://via.placeholder.com/300x200?text=No+Thumbnail';
                                     }}
                                 />
-                                <div className="live-indicator">●</div>
+
                             </div>
 
                             <div className="video-info">

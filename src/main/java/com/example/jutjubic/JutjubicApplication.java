@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableCaching  // <-- DODAJ OVO!
+@EnableCaching
 public class JutjubicApplication {
     public static void main(String[] args) {
         SpringApplication.run(JutjubicApplication.class, args);

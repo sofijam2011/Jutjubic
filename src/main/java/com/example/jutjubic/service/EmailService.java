@@ -20,7 +20,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String toEmail, String token) {
         String subject = "Verifikacija naloga";
-        String verificationUrl = appUrl + "/verify?token=" + token;
+        String verificationUrl = "http://localhost:3000/verify-email?token=" + token;
         String message = "Poštovani,\n\n" +
                 "Hvala što ste se registrovali. Molimo vas da kliknete na sledeći link " +
                 "da biste aktivirali svoj nalog:\n\n" +
