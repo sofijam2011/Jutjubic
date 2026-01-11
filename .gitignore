@@ -37,9 +37,7 @@ build/
 
 ### Visual Studio ###
 .vs/
+.vs_purge/
 
 ### Mac OS ###
 .DS_Store
-
-### Uploads ###
-uploads/
