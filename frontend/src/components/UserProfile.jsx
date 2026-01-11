@@ -104,7 +104,6 @@ const UserProfile = () => {
                                         src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
                                     />
-                                    <span className="red-dot">●</span>
                                 </div>
                                 <div className="video-info">
                                     <h3>{video.title}</h3>

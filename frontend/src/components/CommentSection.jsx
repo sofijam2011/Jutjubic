@@ -7,25 +7,21 @@ const CommentSection = ({ videoId }) => {
     const navigate = useNavigate();
     const isAuthenticated = !!localStorage.getItem('token');
 
-    // State
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Paginacija
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalComments, setTotalComments] = useState(0);
     const [hasNext, setHasNext] = useState(false);
     const [hasPrevious, setHasPrevious] = useState(false);
 
-    // Form
     const [commentText, setCommentText] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [submitSuccess, setSubmitSuccess] = useState('');
 
-    // Rate limit
     const [remainingComments, setRemainingComments] = useState(null);
 
     const PAGE_SIZE = 10;

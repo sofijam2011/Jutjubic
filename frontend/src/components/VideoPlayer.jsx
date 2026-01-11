@@ -17,6 +17,14 @@ const VideoPlayer = () => {
     const viewCounted = useRef(false);
     const isAuthenticated = !!localStorage.getItem('token');
 
+    const handleBackNavigation = () => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/');
+        }
+    };
+
     useEffect(() => {
         console.log('VideoPlayer mounted, authenticated:', isAuthenticated);
         loadVideo();
@@ -105,7 +113,7 @@ const VideoPlayer = () => {
         return (
             <div className="video-player-container">
                 <div className="error">{error || 'Video nije pronađen'}</div>
-                <button onClick={() => navigate('/')} className="btn-back">
+                <button onClick={handleBackNavigation} className="btn-back">
                     ← Nazad na početnu
                 </button>
             </div>
@@ -117,7 +125,7 @@ const VideoPlayer = () => {
     return (
         <div className="video-player-container">
             <div className="video-player-nav">
-                <button onClick={() => navigate('/')} className="btn-back">
+                <button onClick={handleBackNavigation} className="btn-back">
                     ← Nazad
                 </button>
             </div>
@@ -144,7 +152,6 @@ const VideoPlayer = () => {
                 <h1 className="video-title">{video.title}</h1>
 
                 <div className="video-meta">
-
                     <span
                         className="video-author"
                         onClick={() => navigate(`/user/${video.userId}`)}
@@ -189,10 +196,10 @@ const VideoPlayer = () => {
                 )}
             </div>
 
-    {/* Sekcija za komentare */}
-    <CommentSection videoId={id} />
-</div>
-);
+            {/* Sekcija za komentare */}
+            <CommentSection videoId={id} />
+        </div>
+    );
 };
 
 export default VideoPlayer;

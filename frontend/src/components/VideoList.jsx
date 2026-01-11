@@ -26,8 +26,6 @@ const VideoList = () => {
     };
 
     const handleVideoClick = (videoId) => {
-        // SAMO navigiraj - NE uvećavaj view count ovde!
-        // View count će se uvećati kada se učita VideoPlayer
         navigate(`/video/${videoId}`);
     };
 
@@ -65,20 +63,16 @@ const VideoList = () => {
                         >
                             <div className="video-card-header">
                                 <img
-                                    src={videoService.getThumbnailUrl(video.id)}
+                                    src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
                                     alt={video.title}
                                     className="video-thumbnail"
-                                    onError={(e) => {
-                                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Thumbnail';
-                                    }}
                                 />
-
                             </div>
 
                             <div className="video-info">
                                 <h3>{video.title}</h3>
                                 <p className="video-author">@{video.username}</p>
-                                <p className="video-views">👁{video.viewCount} pregleda</p>
+                                <p className="video-views">👁 {video.viewCount} pregleda</p>
 
                                 {video.tags && video.tags.length > 0 && (
                                     <div className="video-tags">

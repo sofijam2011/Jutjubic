@@ -11,7 +11,7 @@ const Dashboard = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/'); // Idi na HomePage umesto /login
+        navigate('/');
     };
 
 
