@@ -60,7 +60,13 @@ public class VideoController {
 
             return ResponseEntity.ok(uploadedVideo);
 
+        } catch (org.springframework.transaction.TransactionTimedOutException e) {
+            System.err.println("Transaction timeout during video upload");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                    .body("Upload timeout: Video upload took too long. Please try again with a smaller file.");
         } catch (Exception e) {
+            System.err.println("Error during video upload: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Upload failed: " + e.getMessage());
