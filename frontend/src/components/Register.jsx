@@ -121,13 +121,13 @@ const Register = () => {
 
       if (error.response && error.response.data) {
         if (typeof error.response.data === 'object' && !error.response.data.error) {
-          // Backend vratio field errors
+          
           setErrors(error.response.data);
         } else if (error.response.data.error) {
-          // Backend vratio error poruku
+
           setMessage(error.response.data.error);
         } else {
-          // Nešto drugo - prikažimo raw data
+
           setMessage('Greška: ' + JSON.stringify(error.response.data));
         }
       } else {

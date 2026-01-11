@@ -57,7 +57,6 @@ const VideoUpload = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validacija
         if (!formData.title.trim()) {
             setError('Naslov je obavezan');
             return;
@@ -80,7 +79,7 @@ const VideoUpload = () => {
         uploadData.append('title', formData.title);
         uploadData.append('description', formData.description);
 
-        // Tagovi - konvertuj string u niz
+        
         if (formData.tags.trim()) {
             const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
             tagsArray.forEach(tag => {

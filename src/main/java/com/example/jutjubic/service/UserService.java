@@ -16,15 +16,10 @@ public class UserService {
     @Autowired
     private VideoRepository videoRepository;
 
-    /**
-     * Dobavi javni profil korisnika - dostupno svima
-     * Ne prikazuje osetljive informacije kao što su email i adresa
-     */
     public UserProfileResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Korisnik nije pronađen"));
 
-        // Broji koliko videa ima korisnik
         Long videoCount = (long) videoRepository.findByUserIdOrderByCreatedAtDesc(userId).size();
 
         return new UserProfileResponse(

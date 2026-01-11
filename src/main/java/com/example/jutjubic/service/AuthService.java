@@ -32,7 +32,7 @@ public class AuthService {
 
     @Transactional
     public void register(RegisterRequest request) {
-        // Validacija
+
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Lozinke se ne poklapaju");
         }
@@ -45,7 +45,6 @@ public class AuthService {
             throw new RuntimeException("Korisničko ime je već zauzeto");
         }
 
-        // Kreiranje korisnika
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
@@ -55,50 +54,42 @@ public class AuthService {
         user.setAddress(request.getAddress());
         user.setEnabled(false);
 
-        // Generisanje verification tokena
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setTokenExpiryDate(LocalDateTime.now().plusHours(24));
 
         userRepository.save(user);
 
-        // Slanje verification emaila
         emailService.sendVerificationEmail(user.getEmail(), token);
     }
 
     public AuthResponse login(LoginRequest request, String ipAddress) {
-        // Provera rate limiting-a
+
         if (loginAttemptService.isBlocked(ipAddress)) {
             throw new RuntimeException("Previše pokušaja prijave. Pokušajte ponovo za 1 minut.");
         }
 
-        // Provera korisnika
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
 
-        // Ako ne postoji baci error
         if (user == null) {
             loginAttemptService.recordLoginAttempt(ipAddress, false);
             throw new RuntimeException("Neispravni kredencijali");
         }
 
-        // Ako lozinka nije tacna baci error
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             loginAttemptService.recordLoginAttempt(ipAddress, false);
             throw new RuntimeException("Neispravni kredencijali");
         }
 
-        // Provera lozinke
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             loginAttemptService.recordLoginAttempt(ipAddress, false);
             throw new RuntimeException("Neispravni kredencijali");
         }
 
-        // Provera da li je nalog aktiviran
         if (!user.isEnabled()) {
             throw new RuntimeException("Nalog nije aktiviran. Proverite svoj email.");
         }
 
-        // Uspešna prijava
         loginAttemptService.recordLoginAttempt(ipAddress, true);
 
         String token = jwtService.generateToken(user.getEmail());

@@ -37,11 +37,9 @@ public class VideoService {
                              MultipartFile thumbnail, MultipartFile video,
                              String location, User user) {
         try {
-            // Save files
             String thumbnailPath = fileStorageService.storeThumbnail(thumbnail);
             String videoPath = fileStorageService.storeVideo(video);
 
-            // Create video entity
             Video videoEntity = new Video();
             videoEntity.setTitle(title);
             videoEntity.setDescription(description);
@@ -51,7 +49,6 @@ public class VideoService {
             videoEntity.setUser(user);
             videoEntity.setViewCount(0L);
 
-            // Handle tags
             Set<Tag> tags = new HashSet<>();
             if (tagNames != null) {
                 for (String tagName : tagNames) {
@@ -65,16 +62,13 @@ public class VideoService {
             }
             videoEntity.setTags(tags);
 
-            // Save video
             Video savedVideo = videoRepository.save(videoEntity);
 
-            // Cache thumbnail
             cacheService.cacheThumbnail(thumbnailPath, thumbnail);
 
             return savedVideo;
 
         } catch (Exception e) {
-            // Rollback: delete uploaded files
             fileStorageService.deleteAllFiles();
             throw new RuntimeException("Video upload failed: " + e.getMessage(), e);
         }
@@ -93,11 +87,6 @@ public class VideoService {
         return toVideoResponse(video);
     }
 
-    /**
-     * ATOMIČNI INCREMENT VIEW COUNT - BEZ TRANSAKCIJA!
-     * Koristi direktan UPDATE u bazi koji je atomičan po defaultu.
-     * Garantuje konzistentnost čak i sa 100+ konkurentnih zahteva.
-     */
     public void incrementViewCount(Long videoId) {
         int rowsAffected = videoRepository.incrementViewCount(videoId);
 

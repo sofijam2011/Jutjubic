@@ -34,7 +34,6 @@ public class LoginAttemptService {
         List<LoginAttempt> recentAttempts = loginAttemptRepository
                 .findRecentAttemptsByIp(ipAddress, oneMinuteAgo);
 
-        // Broji samo neuspešne
         long failedAttempts = recentAttempts.stream()
                 .filter(attempt -> !attempt.isSuccessful())
                 .count();

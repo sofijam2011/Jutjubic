@@ -48,13 +48,9 @@ public class Video {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    // @Version - MOŽEŠ OBRISATI OVO, ne koristimo više optimistic locking za view count
-    // private Long version;
 
-    // Constructors
     public Video() {}
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

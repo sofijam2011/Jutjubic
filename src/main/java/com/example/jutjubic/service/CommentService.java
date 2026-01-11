@@ -26,9 +26,6 @@ public class CommentService {
     @Autowired
     private CommentRateLimitService rateLimitService;
 
-    /**
-     * Keširana metoda za dobavljanje komentara sa paginacijom
-     */
     @Cacheable(value = "comments", key = "#video.id + '-' + #page + '-' + #size")
     public Map<String, Object> getCommentsPaginated(Video video, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -47,43 +44,31 @@ public class CommentService {
         return response;
     }
 
-    /**
-     * Dodavanje komentara sa rate limitingom i kešom
-     */
     @Transactional
     @CacheEvict(value = "comments", allEntries = true)
     public CommentResponse addComment(String text, Video video, User user) {
-        // Provera rate limiting-a
+
         if (rateLimitService.isRateLimited(user.getId())) {
             throw new RuntimeException("Dostigli ste limit od 60 komentara po satu. Pokušajte ponovo kasnije.");
         }
 
-        // Validacija teksta
         if (text == null || text.trim().isEmpty()) {
             throw new RuntimeException("Komentar ne može biti prazan");
         }
 
-        // Kreiranje komentara
         Comment comment = new Comment(text, video, user);
         Comment savedComment = commentRepository.save(comment);
 
-        // Evidentiranje pokušaja za rate limiting
         rateLimitService.recordCommentAttempt(user.getId());
 
         return toCommentResponse(savedComment);
     }
 
-    /**
-     * Broj komentara za video (keširan)
-     */
     @Cacheable(value = "commentCount", key = "#video.id")
     public long getCommentCount(Video video) {
         return commentRepository.countByVideo(video);
     }
 
-    /**
-     * Konverzija Comment -> CommentResponse
-     */
     private CommentResponse toCommentResponse(Comment comment) {
         return new CommentResponse(
                 comment.getId(),

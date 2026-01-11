@@ -10,7 +10,6 @@ public class UserProfileResponse {
     private LocalDateTime createdAt;
     private Long videoCount;
 
-    // Constructor
     public UserProfileResponse() {}
 
     public UserProfileResponse(Long id, String username, String firstName, String lastName,
@@ -23,7 +22,6 @@ public class UserProfileResponse {
         this.videoCount = videoCount;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

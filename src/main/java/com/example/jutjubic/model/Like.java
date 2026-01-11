@@ -24,7 +24,6 @@ public class Like {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Constructors
     public Like() {}
 
     public Like(Video video, User user) {
@@ -32,7 +31,6 @@ public class Like {
         this.user = user;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

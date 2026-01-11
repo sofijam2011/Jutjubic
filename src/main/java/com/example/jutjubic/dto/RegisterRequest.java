@@ -30,7 +30,6 @@ public class RegisterRequest {
     @NotBlank(message = "Adresa je obavezna")
     private String address;
 
-    // Getters and Setters
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 

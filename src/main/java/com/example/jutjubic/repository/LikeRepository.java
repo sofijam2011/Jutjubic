@@ -11,15 +11,15 @@ import java.util.Optional;
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    // Proveri da li korisnik već lajkovao video
+    //proveri da li je korisnik vec lajkovao video
     Optional<Like> findByVideoAndUser(Video video, User user);
 
-    // Izbriši like
+    //obrisi like
     void deleteByVideoAndUser(Video video, User user);
 
-    // Broj lajkova za video
+    //broj lajkova za video
     long countByVideo(Video video);
 
-    // Da li je korisnik lajkovao ovaj video
+    //da li je korisnik lajkovao ovaj video
     boolean existsByVideoAndUser(Video video, User user);
 }

@@ -19,7 +19,6 @@ public class LoginAttempt {
 
     private boolean successful;
 
-    // Constructors
     public LoginAttempt() {}
 
     public LoginAttempt(String ipAddress, LocalDateTime attemptTime, boolean successful) {
@@ -28,7 +27,6 @@ public class LoginAttempt {
         this.successful = successful;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

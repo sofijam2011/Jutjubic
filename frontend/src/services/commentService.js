@@ -9,13 +9,13 @@ const getAuthHeader = () => {
 };
 
 const commentService = {
-    // Dobavi komentare sa paginacijom
+    // dobavi komentare sa paginacijom
     getComments: async (videoId, page = 0, size = 10) => {
         const response = await axios.get(`${API_URL}/${videoId}/comments?page=${page}&size=${size}`);
         return response.data;
     },
 
-    // Dodaj komentar
+    // dodaj komentar
     addComment: async (videoId, text) => {
         const response = await axios.post(
             `${API_URL}/${videoId}/comments`,
@@ -25,13 +25,13 @@ const commentService = {
         return response.data;
     },
 
-    // Broj komentara
+    // broj komentara
     getCommentCount: async (videoId) => {
         const response = await axios.get(`${API_URL}/${videoId}/comments/count`);
         return response.data.count;
     },
 
-    // Rate limit status
+    // rate limit status
     getRateLimitStatus: async (videoId) => {
         try {
             const response = await axios.get(

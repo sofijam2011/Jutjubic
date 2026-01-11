@@ -23,10 +23,6 @@ public class UserController {
     @Autowired
     private VideoService videoService;
 
-    /**
-     * Javno dostupan endpoint za pregled profila korisnika
-     * Dostupan i autentifikovanim i neautentifikovanim korisnicima
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable Long id) {
         try {
@@ -39,9 +35,6 @@ public class UserController {
         }
     }
 
-    /**
-     * Javno dostupan endpoint za pregled videa određenog korisnika
-     */
     @GetMapping("/{id}/videos")
     public ResponseEntity<List<VideoResponse>> getUserVideos(@PathVariable Long id) {
         List<VideoResponse> videos = videoService.getVideosByUserId(id);

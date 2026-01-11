@@ -33,10 +33,7 @@ public class CommentController {
     @Autowired
     private CommentRateLimitService rateLimitService;
 
-    /**
-     * JAVNO DOSTUPAN - Pregled komentara sa paginacijom
-     * Dostupno i autentifikovanim i neautentifikovanim korisnicima
-     */
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getComments(
             @PathVariable Long videoId,
@@ -50,17 +47,13 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * ZAHTEVA AUTENTIFIKACIJU - Dodavanje novog komentara
-     * Neautentifikovani korisnici će dobiti 401 Unauthorized
-     */
     @PostMapping
     public ResponseEntity<?> addComment(
             @PathVariable Long videoId,
             @Valid @RequestBody Map<String, String> request,
             Authentication authentication) {
 
-        // Provera autentifikacije
+        // provera autentifikacije
         if (authentication == null || authentication.getName() == null) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Morate biti prijavljeni da biste ostavili komentar");
@@ -86,9 +79,7 @@ public class CommentController {
         }
     }
 
-    /**
-     * JAVNO DOSTUPAN - Broj komentara za video
-     */
+
     @GetMapping("/count")
     public ResponseEntity<Map<String, Long>> getCommentCount(@PathVariable Long videoId) {
         Video video = videoRepository.findById(videoId)
@@ -98,9 +89,7 @@ public class CommentController {
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    /**
-     * ZAHTEVA AUTENTIFIKACIJU - Provera preostalog broja komentara
-     */
+
     @GetMapping("/rate-limit")
     public ResponseEntity<Map<String, Integer>> getRateLimitStatus(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {

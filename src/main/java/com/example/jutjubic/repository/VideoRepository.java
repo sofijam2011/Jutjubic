@@ -15,7 +15,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     List<Video> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-    // ATOMIČNI INCREMENT - direktno u bazi, BEZ optimistic locking!
     @Modifying
     @Transactional
     @Query("UPDATE Video v SET v.viewCount = v.viewCount + 1 WHERE v.id = :id")

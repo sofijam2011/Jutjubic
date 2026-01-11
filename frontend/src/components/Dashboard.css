@@ -3,7 +3,6 @@
     background: #5F7161;
 }
 
-/* ==================== NAVBAR ==================== */
 .dashboard-navbar {
     padding: 15px 40px;
     background: #4A5A4C;
@@ -52,7 +51,6 @@
     padding: 0 10px;
 }
 
-/* ==================== BUTTONS ==================== */
 .nav-btn {
     padding: 12px 24px;
     border: none;
@@ -84,7 +82,6 @@
     transform: translateY(-2px);
 }
 
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 968px) {
     .dashboard-navbar {
         padding: 10px 20px;
