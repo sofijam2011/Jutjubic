@@ -1,4 +1,4 @@
-.video-list-container {
+﻿.video-list-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
@@ -51,7 +51,7 @@
     background: transparent;
 }
 
-.video-list-thumbnail {
+.video-thumbnail {
     width: 100%;
     height: 100%;
     object-fit: cover;

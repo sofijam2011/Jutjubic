@@ -35,7 +35,7 @@ const Navbar = () => {
                             className="navbar-btn upload"
                             onClick={() => navigate('/upload')}
                         >
-                            🎥 Postavi Video
+                            Postavi Video
                         </button>
                         <button
                             className="navbar-btn logout"

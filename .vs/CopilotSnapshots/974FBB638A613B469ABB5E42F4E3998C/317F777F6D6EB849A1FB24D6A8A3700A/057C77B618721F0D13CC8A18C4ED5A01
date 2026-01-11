@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import videoService from '../services/videoService';
 import './VideoList.css';
@@ -58,6 +58,7 @@ const VideoList = () => {
                 <div className="video-grid">
                     {videos.map(video => {
                         const thumbnailUrl = videoService.getThumbnailUrl(video.id);
+                        console.log(`Thumbnail URL for video ${video.id}:`, thumbnailUrl);
                         
                         return (
                             <div
@@ -69,7 +70,12 @@ const VideoList = () => {
                                     <img
                                         src={thumbnailUrl}
                                         alt={video.title}
-                                        className="video-list-thumbnail"
+                                        className="video-thumbnail"
+                                        onLoad={() => console.log(`Thumbnail loaded for video ${video.id}`)}
+                                        onError={(e) => {
+                                            console.error(`Failed to load thumbnail for video ${video.id}`, e);
+                                            console.error('Image src:', e.target.src);
+                                        }}
                                     />
                                 </div>
 

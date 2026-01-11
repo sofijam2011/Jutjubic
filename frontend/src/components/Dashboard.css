@@ -63,11 +63,11 @@
 }
 
 .upload-btn {
-    background-color: #C40F0F;
+    background-color: #6D8B74;  
 }
 
 .upload-btn:hover {
-    background-color: #e63946;
+    background-color: #5C7A63;
     transform: translateY(-2px);
 }
 

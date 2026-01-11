@@ -10,6 +10,16 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    const handleBackNavigation = () => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/');
+        }
+    };
+
     useEffect(() => {
         loadUserProfile();
         loadUserVideos();
@@ -50,7 +60,7 @@ const UserProfile = () => {
         return (
             <div className="user-profile-container">
                 <div className="error">{error || 'Profil nije pronađen'}</div>
-                <button onClick={() => navigate('/')} className="btn-back">
+                <button onClick={handleBackNavigation} className="btn-back">
                     ← Nazad
                 </button>
             </div>
@@ -60,7 +70,7 @@ const UserProfile = () => {
     return (
         <div className="user-profile-container">
             <div className="profile-header">
-                <button onClick={() => navigate('/')} className="btn-back">
+                <button onClick={handleBackNavigation} className="btn-back">
                     ← Nazad
                 </button>
             </div>
