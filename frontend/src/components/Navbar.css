@@ -52,11 +52,11 @@
 }
 
 .navbar-btn.upload {
-    background-color: #ff4d4f;
+    background-color: #dc3545;
 }
 
 .navbar-btn.upload:hover {
-    background-color: #ff3333;
+    background-color: #c82333;
 }
 
 .navbar-btn.logout {

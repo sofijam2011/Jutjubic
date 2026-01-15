@@ -84,7 +84,7 @@
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #ff4d4f, #ff7875);
+    background: linear-gradient(90deg, #dc3545, #e85563);
     transition: width 0.3s ease;
     display: flex;
     align-items: center;
@@ -102,7 +102,7 @@
 .upload-btn {
     width: 100%;
     padding: 14px;
-    background-color: #ff4d4f; 
+    background-color: #dc3545;
     color: white;
     border: none;
     border-radius: 5px;
@@ -114,9 +114,9 @@
 }
 
 .upload-btn:hover:not(:disabled) {
-    background-color: #ff3333;
+    background-color: #c82333;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 77, 79, 0.4);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
 }
 
 .upload-btn:disabled {
