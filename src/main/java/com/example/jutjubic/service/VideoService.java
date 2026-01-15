@@ -32,7 +32,8 @@ public class VideoService {
     @Autowired
     private CacheService cacheService;
 
-    @Transactional
+
+    @Transactional(timeout = 10)
     public Video uploadVideo(String title, String description, List<String> tagNames,
                              MultipartFile thumbnail, MultipartFile video,
                              String location, User user) {
@@ -52,19 +53,26 @@ public class VideoService {
             Set<Tag> tags = new HashSet<>();
             if (tagNames != null) {
                 for (String tagName : tagNames) {
-                    Tag tag = tagRepository.findByName(tagName)
-                            .orElseGet(() -> {
-                                Tag newTag = new Tag(tagName);
-                                return tagRepository.save(newTag);
-                            });
-                    tags.add(tag);
+                    String trimmedTag = tagName.trim();
+                    if (!trimmedTag.isEmpty()) {
+                        Tag tag = tagRepository.findByName(trimmedTag)
+                                .orElseGet(() -> {
+                                    Tag newTag = new Tag(trimmedTag);
+                                    return tagRepository.save(newTag);
+                                });
+                        tags.add(tag);
+                    }
                 }
             }
             videoEntity.setTags(tags);
 
+             //Thread.sleep(15000);
+
             Video savedVideo = videoRepository.save(videoEntity);
 
-            cacheService.cacheThumbnail(thumbnailPath, thumbnail);
+            cacheService.cacheThumbnail(savedVideo.getId(), thumbnail);
+
+            fileStorageService.clearUploadTracking();
 
             return savedVideo;
 

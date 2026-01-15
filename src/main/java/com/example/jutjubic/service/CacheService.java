@@ -9,8 +9,8 @@ import java.io.IOException;
 @Service
 public class CacheService {
 
-    @CachePut(value = "thumbnails", key = "#filePath")
-    public byte[] cacheThumbnail(String filePath, MultipartFile file) {
+    @CachePut(value = "thumbnails", key = "#videoId")
+    public byte[] cacheThumbnail(Long videoId, MultipartFile file) {
         try {
             return file.getBytes();
         } catch (IOException e) {

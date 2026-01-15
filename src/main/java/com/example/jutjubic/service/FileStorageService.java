@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,6 +18,8 @@ public class FileStorageService {
 
     @Value("${file.upload-dir:./uploads}")
     private String uploadDir;
+
+    private ThreadLocal<List<String>> uploadedFiles = ThreadLocal.withInitial(ArrayList::new);
 
     public String storeThumbnail(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -34,6 +38,9 @@ public class FileStorageService {
 
         Path destinationPath = thumbnailDir.resolve(filename);
         Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+
+        uploadedFiles.get().add(destinationPath.toString());
 
         return destinationPath.toString();
     }
@@ -61,6 +68,9 @@ public class FileStorageService {
         Path destinationPath = videoDir.resolve(filename);
         Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
+
+        uploadedFiles.get().add(destinationPath.toString());
+
         return destinationPath.toString();
     }
 
@@ -74,5 +84,21 @@ public class FileStorageService {
     }
 
     public void deleteAllFiles() {
+        List<String> files = uploadedFiles.get();
+        for (String filePath : files) {
+            try {
+                Path path = Paths.get(filePath);
+                Files.deleteIfExists(path);
+                System.out.println("Deleted file during rollback: " + filePath);
+            } catch (IOException e) {
+                System.err.println("Failed to delete file during rollback: " + filePath);
+                e.printStackTrace();
+            }
+        }
+        uploadedFiles.remove();
+    }
+
+    public void clearUploadTracking() {
+        uploadedFiles.remove();
     }
 }
