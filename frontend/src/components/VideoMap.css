@@ -1,0 +1,260 @@
+.video-map-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-header {
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.map-header h1 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.time-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.time-filter button {
+    padding: 10px 20px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.time-filter button:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.time-filter button.active {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.loading-indicator {
+    display: inline-block;
+    color: #dc3545;
+    font-weight: 500;
+    margin-left: 15px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.video-count {
+    color: #666;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.map-container {
+    flex: 1;
+    z-index: 1;
+}
+
+.cluster-icon {
+    background: transparent;
+    border: none;
+}
+
+.cluster-marker {
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.video-popup {
+    min-width: 200px;
+}
+
+.popup-thumbnail {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.video-popup h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.cluster-info {
+    background: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin: 5px 0;
+    color: #856404;
+}
+
+.video-stats {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.uploader {
+    color: #666;
+    font-size: 13px;
+    margin: 3px 0;
+}
+
+.upload-date {
+    color: #999;
+    font-size: 12px;
+    margin: 3px 0;
+}
+
+.watch-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #dc3545;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.watch-btn:hover {
+    background: #c82333;
+}
+
+.video-sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 350px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    z-index: 2000;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.close-sidebar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 5px 10px;
+}
+
+.close-sidebar:hover {
+    color: #333;
+}
+
+.sidebar-thumbnail {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.video-sidebar h2 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: #333;
+    padding-right: 30px;
+}
+
+.sidebar-stats {
+    display: flex;
+    gap: 15px;
+    margin: 10px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.sidebar-date {
+    color: #999;
+    font-size: 13px;
+    margin: 10px 0;
+}
+
+.cluster-badge {
+    background: #fff3cd;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+    color: #856404;
+    font-size: 14px;
+}
+
+.watch-btn-large {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #dc3545;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: background 0.3s ease;
+}
+
+.watch-btn-large:hover {
+    background: #c82333;
+}
+
+@media (max-width: 768px) {
+    .video-sidebar {
+        width: 100%;
+    }
+
+    .time-filter {
+        flex-direction: column;
+    }
+
+    .time-filter button {
+        width: 100%;
+    }
+}

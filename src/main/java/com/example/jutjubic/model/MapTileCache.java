@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "map_tile_cache")
+@Table(name = "map_tile_cache", indexes = {
+        @Index(name = "idx_tile_coords", columnList = "zoomLevel,tileX,tileY")
+})
 public class MapTileCache {
 
     @Id
@@ -42,7 +44,6 @@ public class MapTileCache {
         this.videoCount = 0;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

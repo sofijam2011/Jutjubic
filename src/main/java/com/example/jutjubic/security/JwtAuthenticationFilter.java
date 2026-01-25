@@ -25,6 +25,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        // DODATO - Preskoči JWT proveru za public endpointe
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/") ||
+                path.startsWith("/api/videos/") ||
+                path.startsWith("/api/users/") ||
+                path.startsWith("/api/map/") ||       // DODATO
+                path.startsWith("/uploads/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String jwt = getJwtFromRequest(request);
 

@@ -40,6 +40,13 @@ public class Video {
     @Column(name = "location")
     private String location;
 
+    // DODATO - Za geografsku mapu
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "video_tags",
@@ -48,36 +55,121 @@ public class Video {
     )
     private Set<Tag> tags = new HashSet<>();
 
-
     public Video() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getThumbnailPath() { return thumbnailPath; }
-    public void setThumbnailPath(String thumbnailPath) { this.thumbnailPath = thumbnailPath; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getVideoPath() { return videoPath; }
-    public void setVideoPath(String videoPath) { this.videoPath = videoPath; }
+    public String getDescription() {
+        return description;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getThumbnailPath() {
+        return thumbnailPath;
+    }
 
-    public Long getViewCount() { return viewCount; }
-    public void setViewCount(Long viewCount) { this.viewCount = viewCount; }
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public String getVideoPath() {
+        return videoPath;
+    }
 
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    // DODATO - Getters/Setters za latitude i longitude
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    // Helper metoda za uploadDate (jer service koristi ovo ime)
+    public LocalDateTime getUploadDate() {
+        return createdAt;
+    }
+
+    public void setUploadDate(LocalDateTime uploadDate) {
+        this.createdAt = uploadDate;
+    }
+
+    // Helper metoda za thumbnailUrl (jer DTO koristi ovo ime)
+    public String getThumbnailUrl() {
+        return thumbnailPath;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailPath = thumbnailUrl;
+    }
 }
