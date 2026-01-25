@@ -1,25 +1,25 @@
 package com.example.jutjubic.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public class VideoMap {
-
     private Long id;
     private String title;
     private String thumbnailUrl;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private LocalDateTime uploadDate;
-    private long viewCount;
-    private int clusterSize;
+    private Long viewCount;
+    private Integer clusterSize;
+    private String uploaderName;
 
-    public VideoMap() {
-    }
 
-    public VideoMap(Long id, String title, String thumbnailUrl,
-                       double latitude, double longitude,
-                       LocalDateTime uploadDate, long viewCount, int clusterSize) {
+    public VideoMap() {}
+
+
+    public VideoMap(Long id, String title, String thumbnailUrl, Double latitude,
+                    Double longitude, LocalDateTime uploadDate, Long viewCount,
+                    Integer clusterSize, String uploaderName) {
         this.id = id;
         this.title = title;
         this.thumbnailUrl = thumbnailUrl;
@@ -28,70 +28,34 @@ public class VideoMap {
         this.uploadDate = uploadDate;
         this.viewCount = viewCount;
         this.clusterSize = clusterSize;
+        this.uploaderName = uploaderName;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    // Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getThumbnailUrl() { return thumbnailUrl; }
+    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
 
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
-    }
+    public LocalDateTime getUploadDate() { return uploadDate; }
+    public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
 
-    public double getLatitude() {
-        return latitude;
-    }
+    public Long getViewCount() { return viewCount; }
+    public void setViewCount(Long viewCount) { this.viewCount = viewCount; }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
+    public Integer getClusterSize() { return clusterSize; }
+    public void setClusterSize(Integer clusterSize) { this.clusterSize = clusterSize; }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public LocalDateTime getUploadDate() {
-        return uploadDate;
-    }
-
-    public void setUploadDate(LocalDateTime uploadDate) {
-        this.uploadDate = uploadDate;
-    }
-
-    public long getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(long viewCount) {
-        this.viewCount = viewCount;
-    }
-
-    public int getClusterSize() {
-        return clusterSize;
-    }
-
-    public void setClusterSize(int clusterSize) {
-        this.clusterSize = clusterSize;
-    }
+    public String getUploaderName() { return uploaderName; }
+    public void setUploaderName(String uploaderName) { this.uploaderName = uploaderName; }
 }
