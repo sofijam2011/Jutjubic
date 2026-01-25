@@ -10,22 +10,16 @@ public class VideoMap {
     private String thumbnailUrl;
     private double latitude;
     private double longitude;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime uploadDate;
-
     private long viewCount;
     private int clusterSize;
-    private String uploaderName;
 
     public VideoMap() {
     }
 
-    // ISPRAVLJENI KONSTRUKTOR - SVE PARAMETRE
     public VideoMap(Long id, String title, String thumbnailUrl,
-                    double latitude, double longitude,
-                    LocalDateTime uploadDate, long viewCount,
-                    int clusterSize, String uploaderName) {  // DODATO uploaderName
+                       double latitude, double longitude,
+                       LocalDateTime uploadDate, long viewCount, int clusterSize) {
         this.id = id;
         this.title = title;
         this.thumbnailUrl = thumbnailUrl;
@@ -34,7 +28,6 @@ public class VideoMap {
         this.uploadDate = uploadDate;
         this.viewCount = viewCount;
         this.clusterSize = clusterSize;
-        this.uploaderName = uploaderName;  // DODATO
     }
 
     // Getters and Setters
@@ -100,13 +93,5 @@ public class VideoMap {
 
     public void setClusterSize(int clusterSize) {
         this.clusterSize = clusterSize;
-    }
-
-    public String getUploaderName() {
-        return uploaderName;
-    }
-
-    public void setUploaderName(String uploaderName) {
-        this.uploaderName = uploaderName;
     }
 }

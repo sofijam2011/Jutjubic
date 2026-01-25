@@ -15,14 +15,6 @@ import java.util.Optional;
 public interface MapTileCacheRepository extends JpaRepository<MapTileCache, Long> {
 
     Optional<MapTileCache> findByZoomLevelAndTileXAndTileY(
-            int zoomLevel, int tileX, int tileY
-    );
-
-    void deleteByZoomLevel(int zoomLevel);
 
     @Modifying
-    @Query("DELETE FROM MapTileCache m WHERE m.lastUpdated < :cutoffDate")
-    void deleteOlderThan(@Param("cutoffDate") LocalDateTime cutoffDate);
-
-    List<MapTileCache> findByZoomLevel(int zoomLevel);
 }
