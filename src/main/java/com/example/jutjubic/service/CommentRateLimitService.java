@@ -99,7 +99,7 @@ public class CommentRateLimitService {
         commentAttemptRepository.save(attempt);
     }
 
-    @Scheduled(fixedRate = 3600000) // Svaki sat
+    @Scheduled(fixedRate = 3600000) // svaki sat
     @Transactional
     public void cleanOldAttempts() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);

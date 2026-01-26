@@ -9,9 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class ViewCountConcurrencyTest {
 
     @Autowired
@@ -37,14 +39,13 @@ public class ViewCountConcurrencyTest {
 
     @BeforeEach
     public void setup() {
-        // Očisti bazu pre svakog testa
-        videoRepository.deleteAll();
-        userRepository.deleteAll();
 
-        // Kreiraj test korisnika
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+
+
         User testUser = new User();
-        testUser.setEmail("test@example.com");
-        testUser.setUsername("testuser");
+        testUser.setEmail("test" + uniqueId + "@example.com");
+        testUser.setUsername("testuser" + uniqueId);
         testUser.setPassword("password123");
         testUser.setFirstName("Test");
         testUser.setLastName("User");
@@ -52,10 +53,10 @@ public class ViewCountConcurrencyTest {
         testUser.setEnabled(true);
         testUser = userRepository.save(testUser);
 
-        // Kreiraj test video
+
         Video testVideo = new Video();
-        testVideo.setTitle("Test Video for Concurrency");
-        testVideo.setDescription("Testing concurrent view count WITHOUT optimistic locking");
+        testVideo.setTitle("Test Video " + uniqueId);
+        testVideo.setDescription("Testing concurrent view count");
         testVideo.setThumbnailPath("test/thumbnail.jpg");
         testVideo.setVideoPath("test/video.mp4");
         testVideo.setUser(testUser);
@@ -73,30 +74,18 @@ public class ViewCountConcurrencyTest {
         System.out.println("╚══════════════════════════════════════════════════════════╝");
     }
 
-    /**
-     * TEST 1: 100 Konkurentnih Threadova
-     * Simulira 100 korisnika koji istovremeno gledaju isti video
-     */
     @Test
     public void testConcurrentViewCount_100Threads() throws InterruptedException {
         int numberOfThreads = 100;
         runConcurrencyTest(numberOfThreads, "100 THREADOVA");
     }
 
-    /**
-     * TEST 2: 500 Konkurentnih Threadova (Stress Test)
-     * Ekstremno opterećenje - proverava da li sistem puca
-     */
     @Test
     public void testConcurrentViewCount_500Threads_StressTest() throws InterruptedException {
         int numberOfThreads = 500;
         runConcurrencyTest(numberOfThreads, "500 THREADOVA (STRESS TEST)");
     }
 
-    /**
-     * TEST 3: 10 Threadova sa Delays (Real-world scenario)
-     * Simulira realniju situaciju sa malim delay-ima između zahteva
-     */
     @Test
     public void testConcurrentViewCount_WithDelays() throws InterruptedException {
         int numberOfThreads = 50;
@@ -122,9 +111,7 @@ public class ViewCountConcurrencyTest {
             final int threadNum = i + 1;
             executorService.submit(() -> {
                 try {
-                    // Random delay (simulira realno korištenje)
                     Thread.sleep((long) (Math.random() * 100));
-
                     videoService.incrementViewCount(testVideoId);
                     successCount.incrementAndGet();
                 } catch (Exception e) {
@@ -142,8 +129,6 @@ public class ViewCountConcurrencyTest {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        videoRepository.flush();
-
         Video finalVideo = videoRepository.findById(testVideoId).orElseThrow();
         Long expectedViewCount = initialViewCount + numberOfThreads;
 
@@ -154,9 +139,6 @@ public class ViewCountConcurrencyTest {
                 "Real-world scenario failed! Expected: " + expectedViewCount + ", Got: " + finalVideo.getViewCount());
     }
 
-    /**
-     * Zajednička metoda za pokretanje konkurentnih testova
-     */
     private void runConcurrencyTest(int numberOfThreads, String testName) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -178,7 +160,6 @@ public class ViewCountConcurrencyTest {
 
         long startTime = System.currentTimeMillis();
 
-        // Pokreni sve threadove
         for (int i = 0; i < numberOfThreads; i++) {
             final int threadNum = i + 1;
             executorService.submit(() -> {
@@ -208,8 +189,6 @@ public class ViewCountConcurrencyTest {
             System.err.println("\n⚠ WARNING: Not all threads completed within 60 seconds!");
         }
 
-        videoRepository.flush();
-
         Video finalVideo = videoRepository.findById(testVideoId).orElseThrow();
         Long expectedViewCount = initialViewCount + numberOfThreads;
 
@@ -223,15 +202,12 @@ public class ViewCountConcurrencyTest {
                         "   But got: " + finalVideo.getViewCount());
 
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
-        System.out.println("║  ✅ TEST PASSED: " + String.format("%-43s", testName) + "║");
+        System.out.println("║  ✅ TEST PASSED: " + String.format("%-41s", testName) + "║");
         System.out.println("║  Atomic update guarantees consistency!                   ║");
         System.out.println("║  All " + String.format("%-3d", numberOfThreads) + " concurrent requests succeeded!                  ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝\n");
     }
 
-    /**
-     * Štampanje rezultata testa
-     */
     private void printResults(int totalThreads, int successCount, int failureCount,
                               Long initialCount, Long finalCount, Long expectedCount, long duration) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");

@@ -34,6 +34,22 @@ public class MapTileService {
     private static final int[] ZOOM_LEVELS = {3, 6, 9};
     private static final double BASE_TILE_SIZE = 10.0;
 
+    // ============== DRASTIČNO VEĆI SEGMENTI ==============
+    //
+    // ZOOM 3 (KONTINENT - cela Evropa vidljiva):
+    // Segment = 15 stepeni ≈ 1500km
+    // Rezultat: ~10-15 markera za celu Evropu
+    private static final double SEGMENT_SIZE_ZOOM_3 = 15.0;
+
+    // ZOOM 6 (REGION - nekoliko država):
+    // Segment = 3 stepena ≈ 300km
+    // Rezultat: ~20-40 markera za region
+    private static final double SEGMENT_SIZE_ZOOM_6 = 3.0;
+
+    // ZOOM 9 (BLIZU - grad/oblast):
+    // Bez grupisanja - svi pojedinačni videi
+    // ==============================================================
+
     private final ObjectMapper objectMapper;
 
     public MapTileService() {
@@ -79,18 +95,6 @@ public class MapTileService {
         return filterByPeriod(dtos, period);
     }
 
-    private List<Video> filterVideosByPeriod(List<Video> videos, TimePeriod period) {
-        LocalDateTime cutoffDate = getCutoffDate(period);
-
-        if (cutoffDate == null) {
-            return videos;
-        }
-
-        return videos.stream()
-                .filter(v -> v.getUploadDate() != null && v.getUploadDate().isAfter(cutoffDate))
-                .collect(Collectors.toList());
-    }
-
     private List<VideoMap> filterByPeriod(List<VideoMap> videos, TimePeriod period) {
         LocalDateTime cutoffDate = getCutoffDate(period);
 
@@ -111,74 +115,92 @@ public class MapTileService {
         };
     }
 
+    /**
+     * ============== GLAVNA LOGIKA AGREGACIJE ==============
+     */
     private List<VideoMap> aggregateVideosForZoom(List<Video> videos, int zoomLevel) {
+        if (videos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         if (zoomLevel >= 9) {
-            logger.info("Zoom nivo {} - prikazivanje svih {} snimaka", zoomLevel, videos.size());
+            // ===== ZOOM 9+ (BLIZU) - Prikaži SVE pojedinačne snimke =====
+            logger.info("★★★ ZOOM {} (BLIZU) - Prikazujem SVE {} snimke ★★★", zoomLevel, videos.size());
             return videos.stream()
                     .map(this::toDTO)
                     .collect(Collectors.toList());
 
         } else if (zoomLevel >= 6) {
-            logger.info("Zoom nivo {} - grupis anje snimaka", zoomLevel);
-            return groupNearbyVideos(videos, 0.1);
+            // ===== ZOOM 6-8 (REGION) - Segmenti od 3° (~300km) =====
+            logger.info("★★★ ZOOM {} (REGION) - Segmenti {}° ★★★", zoomLevel, SEGMENT_SIZE_ZOOM_6);
+            return clusterToSingleRepresentative(videos, SEGMENT_SIZE_ZOOM_6);
 
         } else {
-            logger.info("Zoom nivo {} - prikazivanje reprezentativnih", zoomLevel);
-            return getRepresentativeVideos(videos, 1.0);
+            // ===== ZOOM 3-5 (KONTINENT) - OGROMNI segmenti od 15° (~1500km) =====
+            logger.info("★★★ ZOOM {} (KONTINENT) - Segmenti {}° ★★★", zoomLevel, SEGMENT_SIZE_ZOOM_3);
+            return clusterToSingleRepresentative(videos, SEGMENT_SIZE_ZOOM_3);
         }
     }
 
-    private List<VideoMap> groupNearbyVideos(List<Video> videos, double tolerance) {
-        Map<String, List<Video>> groups = new HashMap<>();
+    /**
+     * Grupiše SVE video snimke u VELIKE segmente.
+     * Vraća SAMO JEDAN video po segmentu - onaj sa NAJVIŠE pregleda.
+     */
+    private List<VideoMap> clusterToSingleRepresentative(List<Video> videos, double segmentSize) {
+
+        // Grupiši po segmentima
+        Map<String, List<Video>> segments = new HashMap<>();
 
         for (Video video : videos) {
-            String key = String.format("%.1f_%.1f",
-                    Math.floor(video.getLatitude() / tolerance) * tolerance,
-                    Math.floor(video.getLongitude() / tolerance) * tolerance
-            );
-            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(video);
+            if (video.getLatitude() == null || video.getLongitude() == null) {
+                continue;
+            }
+
+            int segmentX = (int) Math.floor(video.getLongitude() / segmentSize);
+            int segmentY = (int) Math.floor(video.getLatitude() / segmentSize);
+            String segmentKey = segmentX + "_" + segmentY;
+
+            segments.computeIfAbsent(segmentKey, k -> new ArrayList<>()).add(video);
         }
 
-        logger.info("Grupisano {} snimaka u {} grupa", videos.size(), groups.size());
+        logger.info("╔════════════════════════════════════════════════════╗");
+        logger.info("║ GRUPISANJE: {} videa → {} segmenata              ", videos.size(), segments.size());
+        logger.info("║ Veličina segmenta: {}° (~{}km)                   ", segmentSize, (int)(segmentSize * 111));
+        logger.info("╚════════════════════════════════════════════════════╝");
 
-        return groups.values().stream()
-                .map(group -> {
-                    Video representative = group.stream()
-                            .max(Comparator.comparing(Video::getViewCount))
-                            .orElse(group.get(0));
+        // Za svaki segment vrati SAMO najgledaniji video
+        List<VideoMap> result = new ArrayList<>();
 
-                    VideoMap dto = toDTO(representative);
-                    dto.setClusterSize(group.size());
+        for (Map.Entry<String, List<Video>> entry : segments.entrySet()) {
+            List<Video> segmentVideos = entry.getValue();
 
-                    double avgLat = group.stream().mapToDouble(Video::getLatitude).average().orElse(0);
-                    double avgLon = group.stream().mapToDouble(Video::getLongitude).average().orElse(0);
-                    dto.setLatitude(avgLat);
-                    dto.setLongitude(avgLon);
+            // NAJGLEDANIJI video u segmentu
+            Video mostViewed = segmentVideos.stream()
+                    .max(Comparator.comparingLong(v -> v.getViewCount() != null ? v.getViewCount() : 0L))
+                    .orElse(segmentVideos.get(0));
 
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
+            // Centar segmenta
+            double centerLat = segmentVideos.stream()
+                    .mapToDouble(Video::getLatitude)
+                    .average()
+                    .orElse(mostViewed.getLatitude());
 
-    private List<VideoMap> getRepresentativeVideos(List<Video> videos, double gridSize) {
-        Map<String, Video> grid = new HashMap<>();
+            double centerLon = segmentVideos.stream()
+                    .mapToDouble(Video::getLongitude)
+                    .average()
+                    .orElse(mostViewed.getLongitude());
 
-        for (Video video : videos) {
-            String key = String.format("%.0f_%.0f",
-                    Math.floor(video.getLatitude() / gridSize),
-                    Math.floor(video.getLongitude() / gridSize)
-            );
+            VideoMap dto = toDTO(mostViewed);
+            dto.setClusterSize(segmentVideos.size());
+            dto.setLatitude(centerLat);
+            dto.setLongitude(centerLon);
 
-            grid.merge(key, video, (existing, newVideo) ->
-                    newVideo.getViewCount() > existing.getViewCount() ? newVideo : existing
-            );
+            result.add(dto);
         }
 
-        logger.info("Izabrano {} reprezentativnih snimaka od {} ukupno", grid.size(), videos.size());
+        logger.info(">>> REZULTAT: {} markera na mapi (umesto {}) <<<", result.size(), videos.size());
 
-        return grid.values().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return result;
     }
 
     private double[] calculateTileBounds(int zoomLevel, int tileX, int tileY) {
@@ -230,13 +252,12 @@ public class MapTileService {
     private VideoMap toDTO(Video video) {
         String uploaderName = video.getUser() != null ? video.getUser().getUsername() : "Unknown";
 
-        // Null-safe konverzija sa default vrednostima
         Long id = video.getId();
         String title = video.getTitle();
-        String thumbnailUrl = video.getThumbnailPath(); // Koristimo thumbnailPath
+        String thumbnailUrl = video.getThumbnailPath();
         double latitude = video.getLatitude() != null ? video.getLatitude() : 0.0;
         double longitude = video.getLongitude() != null ? video.getLongitude() : 0.0;
-        LocalDateTime uploadDate = video.getCreatedAt(); // Koristimo createdAt
+        LocalDateTime uploadDate = video.getCreatedAt();
         long viewCount = video.getViewCount() != null ? video.getViewCount() : 0L;
 
         return new VideoMap(
@@ -265,8 +286,6 @@ public class MapTileService {
             cache.setVideoCount(videos.size());
 
             tileCacheRepository.save(cache);
-            logger.info("Cache sačuvan za tile: zoom={}, x={}, y={}, videos={}",
-                    zoomLevel, tileX, tileY, videos.size());
 
         } catch (Exception e) {
             logger.error("Greška pri čuvanju cache-a: ", e);
