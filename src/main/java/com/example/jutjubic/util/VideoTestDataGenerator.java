@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-//@Component  // Aktivirano
+@Component
 public class VideoTestDataGenerator implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoTestDataGenerator.class);
@@ -35,24 +35,21 @@ public class VideoTestDataGenerator implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("=== POKRETANJE GENERISANJA TEST PODATAKA ===");
 
         long existingCount = videoRepository.countVideosWithLocation();
         if (existingCount >= VIDEO_COUNT) {
-            logger.info("Već postoji {} video snimaka sa lokacijom. Preskačem generisanje.", existingCount);
             return;
         }
 
-        // ISPRAVLJENO - Dodaj SVA obavezna polja
         User testUser = userRepository.findByUsername("test_map_user")
                 .orElseGet(() -> {
                     User user = new User();
                     user.setUsername("test_map_user");
                     user.setEmail("test_map@jutjubic.com");
-                    user.setPassword("test123"); // U produkciji enkriptovati!
-                    user.setFirstName("Test");           // DODATO
-                    user.setLastName("MapUser");         // DODATO
-                    user.setAddress("Test Address 123"); // DODATO
+                    user.setPassword("test123");
+                    user.setFirstName("Test");
+                    user.setLastName("MapUser");
+                    user.setAddress("Test Address 123");
                     return userRepository.save(user);
                 });
 
@@ -85,8 +82,8 @@ public class VideoTestDataGenerator implements CommandLineRunner {
 
             video.setDescription("Exploring " + location + " - " + activity.toLowerCase());
 
-            video.setVideoPath("/videos/test_sample.mp4");
-            video.setThumbnailPath("/thumbnails/test_thumbnail_" + (i % 10) + ".jpg");
+            video.setVideoPath(".\\uploads\\videos\\test_sample.mp4");
+            video.setThumbnailPath(".\\uploads\\thumbnails\\test_thumbnail.PNG");
 
             double latitude = MIN_LAT + (MAX_LAT - MIN_LAT) * random.nextDouble();
             double longitude = MIN_LON + (MAX_LON - MIN_LON) * random.nextDouble();
@@ -108,7 +105,6 @@ public class VideoTestDataGenerator implements CommandLineRunner {
         }
 
         long duration = (System.currentTimeMillis() - startTime) / 1000;
-        logger.info("=== ZAVRŠENO GENERISANJE TEST PODATAKA ===");
         logger.info("Kreirano {} video snimaka za {} sekundi", VIDEO_COUNT, duration);
         logger.info("Prosečno vreme po video snimku: {} ms",
                 (System.currentTimeMillis() - startTime) / VIDEO_COUNT);

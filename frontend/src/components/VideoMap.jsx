@@ -183,24 +183,15 @@ const VideoMap = () => {
                         >
                             <Popup>
                                 <div className="video-popup">
-                                    {video.thumbnailUrl && (
-                                        <img 
-                                            src={`http://localhost:8081${video.thumbnailUrl}`}
-                                            alt={video.title}
-                                            className="popup-thumbnail"
-                                            onError={(e) => {
-                                                e.target.src = '/default-thumbnail.png';
-                                            }}
-                                        />
-                                    )}
+
                                     <h3>{video.title}</h3>
                                     {video.clusterSize > 1 && (
                                         <p className="cluster-info">
-                                            📍 {video.clusterSize} video snimaka na ovoj lokaciji
+                                             {video.clusterSize} video snimaka na ovoj lokaciji
                                         </p>
                                     )}
                                     <p className="video-stats">
-                                        👁️ {video.viewCount.toLocaleString()} pregleda
+                                        👁 {video.viewCount.toLocaleString()} pregleda
                                     </p>
                                     <p className="uploader">
                                         Autor: {video.uploaderName}
@@ -233,22 +224,22 @@ const VideoMap = () => {
                     </button>
                     {selectedVideo.thumbnailUrl && (
                         <img 
-                            src={`http://localhost:8081${selectedVideo.thumbnailUrl}`}
+                            src={`http://localhost:8081/api/videos/${selectedVideo.id}/thumbnail`}
                             alt={selectedVideo.title}
                             className="sidebar-thumbnail"
                         />
                     )}
                     <h2>{selectedVideo.title}</h2>
                     <div className="sidebar-stats">
-                        <span>👁️ {selectedVideo.viewCount.toLocaleString()}</span>
-                        <span>👤 {selectedVideo.uploaderName}</span>
+                        <span>👁 {selectedVideo.viewCount.toLocaleString()}</span>
+                        <span> {selectedVideo.uploaderName}</span>
                     </div>
                     <p className="sidebar-date">
                         Postavljeno: {new Date(selectedVideo.uploadDate).toLocaleDateString('sr-RS')}
                     </p>
                     {selectedVideo.clusterSize > 1 && (
                         <div className="cluster-badge">
-                            📍 {selectedVideo.clusterSize} videa na lokaciji
+                             {selectedVideo.clusterSize} videa na lokaciji
                         </div>
                     )}
                     <a 

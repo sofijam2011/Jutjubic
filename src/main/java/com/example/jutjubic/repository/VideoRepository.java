@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long> {
 
-    // Postojeće metode
     List<Video> findAllByOrderByCreatedAtDesc();
 
     List<Video> findByUserIdOrderByCreatedAtDesc(Long userId);
@@ -23,7 +22,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query("UPDATE Video v SET v.viewCount = v.viewCount + 1 WHERE v.id = :id")
     int incrementViewCount(@Param("id") Long id);
 
-    // DODATO - Metode za mapu
     @Query("SELECT v FROM Video v WHERE v.latitude IS NOT NULL " +
             "AND v.latitude BETWEEN :minLat AND :maxLat " +
             "AND v.longitude BETWEEN :minLon AND :maxLon")

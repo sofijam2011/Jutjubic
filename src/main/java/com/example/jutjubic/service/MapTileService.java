@@ -34,21 +34,10 @@ public class MapTileService {
     private static final int[] ZOOM_LEVELS = {3, 6, 9};
     private static final double BASE_TILE_SIZE = 10.0;
 
-    // ============== DRASTIČNO VEĆI SEGMENTI ==============
-    //
-    // ZOOM 3 (KONTINENT - cela Evropa vidljiva):
-    // Segment = 15 stepeni ≈ 1500km
-    // Rezultat: ~10-15 markera za celu Evropu
     private static final double SEGMENT_SIZE_ZOOM_3 = 15.0;
 
-    // ZOOM 6 (REGION - nekoliko država):
-    // Segment = 3 stepena ≈ 300km
-    // Rezultat: ~20-40 markera za region
     private static final double SEGMENT_SIZE_ZOOM_6 = 3.0;
 
-    // ZOOM 9 (BLIZU - grad/oblast):
-    // Bez grupisanja - svi pojedinačni videi
-    // ==============================================================
 
     private final ObjectMapper objectMapper;
 
@@ -115,16 +104,12 @@ public class MapTileService {
         };
     }
 
-    /**
-     * ============== GLAVNA LOGIKA AGREGACIJE ==============
-     */
     private List<VideoMap> aggregateVideosForZoom(List<Video> videos, int zoomLevel) {
         if (videos.isEmpty()) {
             return new ArrayList<>();
         }
 
         if (zoomLevel >= 9) {
-            // ===== ZOOM 9+ (BLIZU) - Prikaži SVE pojedinačne snimke =====
             logger.info("★★★ ZOOM {} (BLIZU) - Prikazujem SVE {} snimke ★★★", zoomLevel, videos.size());
             return videos.stream()
                     .map(this::toDTO)
@@ -142,13 +127,8 @@ public class MapTileService {
         }
     }
 
-    /**
-     * Grupiše SVE video snimke u VELIKE segmente.
-     * Vraća SAMO JEDAN video po segmentu - onaj sa NAJVIŠE pregleda.
-     */
     private List<VideoMap> clusterToSingleRepresentative(List<Video> videos, double segmentSize) {
 
-        // Grupiši po segmentima
         Map<String, List<Video>> segments = new HashMap<>();
 
         for (Video video : videos) {
@@ -163,23 +143,15 @@ public class MapTileService {
             segments.computeIfAbsent(segmentKey, k -> new ArrayList<>()).add(video);
         }
 
-        logger.info("╔════════════════════════════════════════════════════╗");
-        logger.info("║ GRUPISANJE: {} videa → {} segmenata              ", videos.size(), segments.size());
-        logger.info("║ Veličina segmenta: {}° (~{}km)                   ", segmentSize, (int)(segmentSize * 111));
-        logger.info("╚════════════════════════════════════════════════════╝");
-
-        // Za svaki segment vrati SAMO najgledaniji video
         List<VideoMap> result = new ArrayList<>();
 
         for (Map.Entry<String, List<Video>> entry : segments.entrySet()) {
             List<Video> segmentVideos = entry.getValue();
 
-            // NAJGLEDANIJI video u segmentu
             Video mostViewed = segmentVideos.stream()
                     .max(Comparator.comparingLong(v -> v.getViewCount() != null ? v.getViewCount() : 0L))
                     .orElse(segmentVideos.get(0));
 
-            // Centar segmenta
             double centerLat = segmentVideos.stream()
                     .mapToDouble(Video::getLatitude)
                     .average()
@@ -197,8 +169,6 @@ public class MapTileService {
 
             result.add(dto);
         }
-
-        logger.info(">>> REZULTAT: {} markera na mapi (umesto {}) <<<", result.size(), videos.size());
 
         return result;
     }

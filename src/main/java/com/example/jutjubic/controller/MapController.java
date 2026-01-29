@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/map")
-// UKLONJENO: @CrossOrigin(origins = "*")
 public class MapController {
 
     private static final Logger logger = LoggerFactory.getLogger(MapController.class);

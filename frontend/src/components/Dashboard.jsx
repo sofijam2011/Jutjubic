@@ -39,6 +39,13 @@ const Dashboard = () => {
                     </span>
 
                     <button
+                        className="nav-btn map-btn"
+                        onClick={() => navigate('/map')}
+                    >
+                        Mapa
+                    </button>
+
+                    <button
                         className="nav-btn upload-btn"
                         onClick={() => navigate('/upload')}
                     >
