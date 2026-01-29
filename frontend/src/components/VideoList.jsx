@@ -70,6 +70,11 @@ const VideoList = () => {
                                         src={thumbnailUrl}
                                         alt={video.title}
                                         className="video-list-thumbnail"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.style.backgroundColor = '#1a1a2e';
+                                        }}
                                     />
                                 </div>
 

@@ -36,7 +36,7 @@ public class FileStorageService {
         Path thumbnailDir = Paths.get(uploadDir, "thumbnails");
         Files.createDirectories(thumbnailDir);
 
-        Path destinationPath = thumbnailDir.resolve(filename);
+        Path destinationPath = thumbnailDir.resolve(filename).toAbsolutePath().normalize();
         Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
 
@@ -65,7 +65,7 @@ public class FileStorageService {
         Path videoDir = Paths.get(uploadDir, "videos");
         Files.createDirectories(videoDir);
 
-        Path destinationPath = videoDir.resolve(filename);
+        Path destinationPath = videoDir.resolve(filename).toAbsolutePath().normalize();
         Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
 
@@ -77,9 +77,14 @@ public class FileStorageService {
     public byte[] loadThumbnail(String thumbnailPath) {
         try {
             Path path = Paths.get(thumbnailPath);
+            if (!Files.exists(path)) {
+                String filename = thumbnailPath.replace('\\', '/');
+                filename = filename.substring(filename.lastIndexOf('/') + 1);
+                path = Paths.get(uploadDir, "thumbnails", filename).toAbsolutePath().normalize();
+            }
             return Files.readAllBytes(path);
         } catch (IOException e) {
-            throw new RuntimeException("Could not read thumbnail file: " + e.getMessage());
+            throw new RuntimeException("Could not read thumbnail file: " + thumbnailPath);
         }
     }
 

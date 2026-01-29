@@ -135,6 +135,7 @@ const VideoPlayer = () => {
                     className="video-element"
                     controls
                     autoPlay
+                    poster={`http://localhost:8081/api/videos/${id}/thumbnail`}
                     src={`http://localhost:8081/api/videos/${id}/stream`}
                     onError={(e) => {
                         console.error('Video element error:', e);

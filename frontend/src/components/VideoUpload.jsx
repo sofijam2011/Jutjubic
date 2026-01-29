@@ -9,7 +9,9 @@ const VideoUpload = () => {
         title: '',
         description: '',
         tags: '',
-        location: ''
+        location: '',
+        latitude: '',
+        longitude: ''
     });
     const [thumbnail, setThumbnail] = useState(null);
     const [video, setVideo] = useState(null);
@@ -91,6 +93,11 @@ const VideoUpload = () => {
             uploadData.append('location', formData.location);
         }
 
+        if (formData.latitude && formData.longitude) {
+            uploadData.append('latitude', parseFloat(formData.latitude));
+            uploadData.append('longitude', parseFloat(formData.longitude));
+        }
+
         uploadData.append('thumbnail', thumbnail);
         uploadData.append('video', video);
 
@@ -167,6 +174,35 @@ const VideoUpload = () => {
                             onChange={handleChange}
                             placeholder="Beograd, Srbija"
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Koordinate za mapu (opciono)</label>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <input
+                                type="number"
+                                name="latitude"
+                                value={formData.latitude}
+                                onChange={handleChange}
+                                placeholder="Latitude (npr. 44.787)"
+                                step="any"
+                                min="-90"
+                                max="90"
+                                style={{ flex: 1 }}
+                            />
+                            <input
+                                type="number"
+                                name="longitude"
+                                value={formData.longitude}
+                                onChange={handleChange}
+                                placeholder="Longitude (npr. 20.457)"
+                                step="any"
+                                min="-180"
+                                max="180"
+                                style={{ flex: 1 }}
+                            />
+                        </div>
+                        <small>Unesite koordinate da bi se video prikazao na mapi</small>
                     </div>
 
                     <div className="form-group">

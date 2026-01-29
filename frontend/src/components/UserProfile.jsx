@@ -113,6 +113,11 @@ const UserProfile = () => {
                                     <img
                                         src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.style.backgroundColor = '#1a1a2e';
+                                        }}
                                     />
                                 </div>
                                 <div className="video-info">

@@ -40,6 +40,8 @@ public class VideoController {
             @RequestParam("thumbnail") MultipartFile thumbnail,
             @RequestParam("video") MultipartFile video,
             @RequestParam(value = "location", required = false) String location,
+            @RequestParam(value = "latitude", required = false) Double latitude,
+            @RequestParam(value = "longitude", required = false) Double longitude,
             Authentication authentication) {
 
         try {
@@ -55,7 +57,7 @@ public class VideoController {
                     List.of();
 
             Video uploadedVideo = videoService.uploadVideo(
-                    title, description, tags, thumbnail, video, location, user
+                    title, description, tags, thumbnail, video, location, latitude, longitude, user
             );
 
             return ResponseEntity.ok(uploadedVideo);
@@ -112,11 +114,16 @@ public class VideoController {
 
             File videoFile = new File(videoPath);
             if (!videoFile.exists()) {
-                System.err.println("Video file not found at: " + videoPath);
-                return ResponseEntity.notFound().build();
+                String filename = videoPath.replace('\\', '/');
+                filename = filename.substring(filename.lastIndexOf('/') + 1);
+                videoFile = new File("./uploads/videos/" + filename);
+                if (!videoFile.exists()) {
+                    System.err.println("Video file not found at: " + videoPath);
+                    return ResponseEntity.notFound().build();
+                }
             }
 
-            Path path = Paths.get(videoPath);
+            Path path = videoFile.toPath();
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() && resource.isReadable()) {

@@ -82,8 +82,8 @@ public class VideoTestDataGenerator implements CommandLineRunner {
 
             video.setDescription("Exploring " + location + " - " + activity.toLowerCase());
 
-            video.setVideoPath(".\\uploads\\videos\\test_sample.mp4");
-            video.setThumbnailPath(".\\uploads\\thumbnails\\test_thumbnail.PNG");
+            video.setVideoPath("./uploads/videos/test_sample.mp4");
+            video.setThumbnailPath("./uploads/thumbnails/test_thumbnail.PNG");
 
             double latitude = MIN_LAT + (MAX_LAT - MIN_LAT) * random.nextDouble();
             double longitude = MIN_LON + (MAX_LON - MIN_LON) * random.nextDouble();

@@ -32,11 +32,14 @@ public class VideoService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private MapTileService mapTileService;
+
 
     @Transactional(timeout = 10)
     public Video uploadVideo(String title, String description, List<String> tagNames,
                              MultipartFile thumbnail, MultipartFile video,
-                             String location, User user) {
+                             String location, Double latitude, Double longitude, User user) {
         try {
             String thumbnailPath = fileStorageService.storeThumbnail(thumbnail);
             String videoPath = fileStorageService.storeVideo(video);
@@ -47,6 +50,8 @@ public class VideoService {
             videoEntity.setThumbnailPath(thumbnailPath);
             videoEntity.setVideoPath(videoPath);
             videoEntity.setLocation(location);
+            videoEntity.setLatitude(latitude);
+            videoEntity.setLongitude(longitude);
             videoEntity.setUser(user);
             videoEntity.setViewCount(0L);
 
@@ -71,6 +76,8 @@ public class VideoService {
             Video savedVideo = videoRepository.save(videoEntity);
 
             cacheService.cacheThumbnail(savedVideo.getId(), thumbnail);
+
+            mapTileService.updateTileForNewVideo(savedVideo);
 
             fileStorageService.clearUploadTracking();
 
