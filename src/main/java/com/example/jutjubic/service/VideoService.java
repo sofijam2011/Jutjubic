@@ -33,11 +33,14 @@ public class VideoService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private MapTileService mapTileService;
+
 
     @Transactional(timeout = 10)
     public Video uploadVideo(String title, String description, List<String> tagNames,
                              MultipartFile thumbnail, MultipartFile video,
-                             String location, User user, LocalDateTime scheduledDateTime, Long durationSeconds) {
+                             String location, Double latitude, Double longitude, User user,  LocalDateTime scheduledDateTime, Long durationSeconds) {
         try {
             String thumbnailPath = fileStorageService.storeThumbnail(thumbnail);
             String videoPath = fileStorageService.storeVideo(video);
@@ -48,6 +51,8 @@ public class VideoService {
             videoEntity.setThumbnailPath(thumbnailPath);
             videoEntity.setVideoPath(videoPath);
             videoEntity.setLocation(location);
+            videoEntity.setLatitude(latitude);
+            videoEntity.setLongitude(longitude);
             videoEntity.setUser(user);
             videoEntity.setViewCount(0L);
 
@@ -57,7 +62,7 @@ public class VideoService {
             } else {
                 videoEntity.setIsScheduled(false);
             }
-            
+
             if (durationSeconds != null) {
                 videoEntity.setDurationSeconds(durationSeconds);
             }
@@ -84,6 +89,8 @@ public class VideoService {
 
             cacheService.cacheThumbnail(savedVideo.getId(), thumbnail);
 
+            mapTileService.updateTileForNewVideo(savedVideo);
+
             fileStorageService.clearUploadTracking();
 
             return savedVideo;
@@ -99,7 +106,7 @@ public class VideoService {
                 .stream()
                 .filter(video -> {
                     if (video.getIsScheduled() != null && video.getIsScheduled()) {
-                        return video.getScheduledDateTime() != null && 
+                        return video.getScheduledDateTime() != null &&
                                LocalDateTime.now().isAfter(video.getScheduledDateTime());
                     }
                     return true;
@@ -111,14 +118,14 @@ public class VideoService {
     public VideoResponse getVideoById(Long id) {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Video not found"));
-        
+
         if (video.getIsScheduled() != null && video.getIsScheduled()) {
-            if (video.getScheduledDateTime() != null && 
+            if (video.getScheduledDateTime() != null &&
                 LocalDateTime.now().isBefore(video.getScheduledDateTime())) {
                 throw new IllegalArgumentException("Video is not available yet");
             }
         }
-        
+
         return toVideoResponse(video);
     }
 
@@ -163,7 +170,7 @@ public class VideoService {
                 .stream()
                 .filter(video -> {
                     if (video.getIsScheduled() != null && video.getIsScheduled()) {
-                        return video.getScheduledDateTime() != null && 
+                        return video.getScheduledDateTime() != null &&
                                LocalDateTime.now().isAfter(video.getScheduledDateTime());
                     }
                     return true;

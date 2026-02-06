@@ -10,6 +10,9 @@ const VideoUpload = () => {
         description: '',
         tags: '',
         location: '',
+        latitude: '',
+        longitude: ''
+        location: '',
         scheduledDateTime: '',
         isScheduled: false
     });
@@ -52,7 +55,7 @@ const VideoUpload = () => {
                 setError('Video ne može biti veći od 200MB');
                 return;
             }
-            
+
             const videoElement = document.createElement('video');
             videoElement.preload = 'metadata';
             videoElement.onloadedmetadata = function() {
@@ -62,7 +65,7 @@ const VideoUpload = () => {
                 console.log('Video duration:', duration, 'seconds');
             };
             videoElement.src = URL.createObjectURL(file);
-            
+
             setVideo(file);
             setError('');
         }
@@ -103,6 +106,11 @@ const VideoUpload = () => {
 
         if (formData.location.trim()) {
             uploadData.append('location', formData.location);
+        }
+
+        if (formData.latitude && formData.longitude) {
+            uploadData.append('latitude', parseFloat(formData.latitude));
+            uploadData.append('longitude', parseFloat(formData.longitude));
         }
 
         if (formData.isScheduled && formData.scheduledDateTime) {
@@ -189,6 +197,35 @@ const VideoUpload = () => {
                             onChange={handleChange}
                             placeholder="Beograd, Srbija"
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Koordinate za mapu (opciono)</label>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <input
+                                type="number"
+                                name="latitude"
+                                value={formData.latitude}
+                                onChange={handleChange}
+                                placeholder="Latitude (npr. 44.787)"
+                                step="any"
+                                min="-90"
+                                max="90"
+                                style={{ flex: 1 }}
+                            />
+                            <input
+                                type="number"
+                                name="longitude"
+                                value={formData.longitude}
+                                onChange={handleChange}
+                                placeholder="Longitude (npr. 20.457)"
+                                step="any"
+                                min="-180"
+                                max="180"
+                                style={{ flex: 1 }}
+                            />
+                        </div>
+                        <small>Unesite koordinate da bi se video prikazao na mapi</small>
                     </div>
 
                     <div className="form-group">

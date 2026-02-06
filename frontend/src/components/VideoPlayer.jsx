@@ -36,7 +36,7 @@ const VideoPlayer = () => {
         console.log('VideoPlayer mounted, authenticated:', isAuthenticated);
         loadVideo();
         loadLikeStatus();
-        
+
         return () => {
             if (syncIntervalRef.current) {
                 clearInterval(syncIntervalRef.current);
@@ -60,7 +60,7 @@ const VideoPlayer = () => {
             const data = await videoService.getVideoById(id);
             console.log('Video data received:', data);
             setVideo(data);
-            
+
             await loadStreamingInfo();
         } catch (err) {
             console.error('Error loading video:', err);
@@ -87,12 +87,12 @@ const VideoPlayer = () => {
         if (streamingInfo && streamingInfo.available && streamingInfo.isScheduled && videoRef.current) {
             console.log('Initializing scheduled video with offset:', streamingInfo.offsetSeconds);
             preventPauseRef.current = true;
-            
+
             const initializeVideo = () => {
                 if (videoRef.current) {
                     videoRef.current.currentTime = streamingInfo.offsetSeconds;
                     console.log('Set video currentTime to:', streamingInfo.offsetSeconds);
-                    
+
                     const attemptPlay = (retries = 3) => {
                         videoRef.current?.play().then(() => {
                             console.log('Video playing successfully');
@@ -107,7 +107,7 @@ const VideoPlayer = () => {
                             }
                         });
                     };
-                    
+
                     attemptPlay();
                 }
             };
@@ -117,11 +117,11 @@ const VideoPlayer = () => {
             } else {
                 videoRef.current.addEventListener('loadedmetadata', initializeVideo, { once: true });
             }
-            
+
             if (!syncIntervalRef.current) {
                 syncIntervalRef.current = setInterval(() => {
                     syncVideoTime();
-                }, 10000); 
+                }, 10000);
             }
         } else if (streamingInfo && (!streamingInfo.isScheduled || !streamingInfo.available)) {
             preventPauseRef.current = false;
@@ -136,17 +136,17 @@ const VideoPlayer = () => {
         try {
             const response = await fetch(`http://localhost:8081/api/videos/${id}/streaming-info`);
             const info = await response.json();
-            
+
             if (info.available && info.isScheduled && videoRef.current) {
                 const currentTime = videoRef.current.currentTime;
                 const serverTime = info.offsetSeconds;
                 const diff = Math.abs(currentTime - serverTime);
-                
+
                 if (videoRef.current.paused) {
                     videoRef.current.play().catch(err => console.error('Play error:', err));
                 }
-                
-                
+
+
                 if (diff > 5) {
                     console.log(`Resyncing: local=${currentTime}s, server=${serverTime}s, diff=${diff}s`);
                     lastSyncTime.current = Date.now();
@@ -262,6 +262,10 @@ const VideoPlayer = () => {
                     </div>
                 )}
                 <video
+                    className="video-element"
+                    controls
+                    autoPlay
+                    poster={`http://localhost:8081/api/videos/${id}/thumbnail`}
                     ref={videoRef}
                     className={`video-element ${streamingInfo?.isScheduled ? 'live-mode' : ''}`}
                     controls={!streamingInfo?.isScheduled}
@@ -286,7 +290,7 @@ const VideoPlayer = () => {
                         if (streamingInfo && streamingInfo.isScheduled && !streamingInfo.canSeek) {
                             const targetTime = e.target.currentTime;
                             const expectedTime = streamingInfo.offsetSeconds;
-                            
+
                             if (Math.abs(targetTime - expectedTime) > 10) {
                                 e.preventDefault();
                                 console.log('Blocking seek attempt');

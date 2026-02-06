@@ -222,13 +222,15 @@ const VideoMap = () => {
                     >
                         ✕
                     </button>
-                    {selectedVideo.thumbnailUrl && (
-                        <img 
-                            src={`http://localhost:8081/api/videos/${selectedVideo.id}/thumbnail`}
-                            alt={selectedVideo.title}
-                            className="sidebar-thumbnail"
-                        />
-                    )}
+                    <img
+                        src={`http://localhost:8081/api/videos/${selectedVideo.id}/thumbnail`}
+                        alt={selectedVideo.title}
+                        className="sidebar-thumbnail"
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                        }}
+                    />
                     <h2>{selectedVideo.title}</h2>
                     <div className="sidebar-stats">
                         <span>👁 {selectedVideo.viewCount.toLocaleString()}</span>

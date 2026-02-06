@@ -44,6 +44,8 @@ public class VideoController {
             @RequestParam("thumbnail") MultipartFile thumbnail,
             @RequestParam("video") MultipartFile video,
             @RequestParam(value = "location", required = false) String location,
+            @RequestParam(value = "latitude", required = false) Double latitude,
+            @RequestParam(value = "longitude", required = false) Double longitude,
             @RequestParam(value = "scheduledDateTime", required = false) String scheduledDateTimeString,
             @RequestParam(value = "durationSeconds", required = false) Long durationSeconds,
             Authentication authentication) {
@@ -66,8 +68,7 @@ public class VideoController {
             }
 
             Video uploadedVideo = videoService.uploadVideo(
-                    title, description, tags, thumbnail, video, location, user,
-                    scheduledDateTime, durationSeconds
+                    title, description, tags, thumbnail, video, location, latitude, longitude, user, scheduledDateTime, durationSeconds
             );
 
             return ResponseEntity.ok(uploadedVideo);
@@ -124,11 +125,16 @@ public class VideoController {
 
             File videoFile = new File(videoPath);
             if (!videoFile.exists()) {
-                System.err.println("Video file not found at: " + videoPath);
-                return ResponseEntity.notFound().build();
+                String filename = videoPath.replace('\\', '/');
+                filename = filename.substring(filename.lastIndexOf('/') + 1);
+                videoFile = new File("./uploads/videos/" + filename);
+                if (!videoFile.exists()) {
+                    System.err.println("Video file not found at: " + videoPath);
+                    return ResponseEntity.notFound().build();
+                }
             }
 
-            Path path = Paths.get(videoPath);
+            Path path = videoFile.toPath();
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() && resource.isReadable()) {
@@ -152,20 +158,20 @@ public class VideoController {
         try {
             VideoResponse video = videoService.getVideoById(id);
             Map<String, Object> info = new HashMap<>();
-            
+
             if (video.getIsScheduled() != null && video.getIsScheduled() && video.getScheduledDateTime() != null) {
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime scheduledTime = video.getScheduledDateTime();
-                
+
                 long offsetSeconds = Duration.between(scheduledTime, now).getSeconds();
-                
+
                 if (offsetSeconds < 0) {
                     info.put("available", false);
                     info.put("message", "Video nije još uvek dostupan");
                     info.put("scheduledDateTime", scheduledTime.toString());
                     return ResponseEntity.ok(info);
                 }
-                
+
                 if (video.getDurationSeconds() != null && offsetSeconds > video.getDurationSeconds()) {
                     info.put("available", true);
                     info.put("isScheduled", false);
@@ -187,7 +193,7 @@ public class VideoController {
                 info.put("canSeek", true);
                 info.put("offsetSeconds", 0);
             }
-            
+
             return ResponseEntity.ok(info);
         } catch (IllegalArgumentException e) {
             Map<String, Object> errorInfo = new HashMap<>();
