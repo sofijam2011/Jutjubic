@@ -40,12 +40,20 @@ public class Video {
     @Column(name = "location")
     private String location;
 
-    // DODATO - Za geografsku mapu
     @Column(name = "latitude")
     private Double latitude;
 
     @Column(name = "longitude")
     private Double longitude;
+
+    @Column(name = "scheduled_date_time")
+    private LocalDateTime scheduledDateTime;
+
+    @Column(name = "is_scheduled")
+    private Boolean isScheduled = false;
+
+    @Column(name = "duration_seconds")
+    private Long durationSeconds;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -145,6 +153,30 @@ public class Video {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public LocalDateTime getScheduledDateTime() {
+        return scheduledDateTime;
+    }
+
+    public void setScheduledDateTime(LocalDateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
+    }
+
+    public Boolean getIsScheduled() {
+        return isScheduled;
+    }
+
+    public void setIsScheduled(Boolean isScheduled) {
+        this.isScheduled = isScheduled;
+    }
+
+    public Long getDurationSeconds() {
+        return durationSeconds;
+    }
+
+    public void setDurationSeconds(Long durationSeconds) {
+        this.durationSeconds = durationSeconds;
     }
 
     public Set<Tag> getTags() {

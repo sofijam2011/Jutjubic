@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class VideoService {
     @Transactional(timeout = 10)
     public Video uploadVideo(String title, String description, List<String> tagNames,
                              MultipartFile thumbnail, MultipartFile video,
-                             String location, User user) {
+                             String location, User user, LocalDateTime scheduledDateTime, Long durationSeconds) {
         try {
             String thumbnailPath = fileStorageService.storeThumbnail(thumbnail);
             String videoPath = fileStorageService.storeVideo(video);
@@ -49,6 +50,17 @@ public class VideoService {
             videoEntity.setLocation(location);
             videoEntity.setUser(user);
             videoEntity.setViewCount(0L);
+
+            if (scheduledDateTime != null) {
+                videoEntity.setScheduledDateTime(scheduledDateTime);
+                videoEntity.setIsScheduled(true);
+            } else {
+                videoEntity.setIsScheduled(false);
+            }
+            
+            if (durationSeconds != null) {
+                videoEntity.setDurationSeconds(durationSeconds);
+            }
 
             Set<Tag> tags = new HashSet<>();
             if (tagNames != null) {
@@ -85,6 +97,13 @@ public class VideoService {
     public List<VideoResponse> getAllVideos() {
         return videoRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
+                .filter(video -> {
+                    if (video.getIsScheduled() != null && video.getIsScheduled()) {
+                        return video.getScheduledDateTime() != null && 
+                               LocalDateTime.now().isAfter(video.getScheduledDateTime());
+                    }
+                    return true;
+                })
                 .map(this::toVideoResponse)
                 .collect(Collectors.toList());
     }
@@ -92,6 +111,14 @@ public class VideoService {
     public VideoResponse getVideoById(Long id) {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Video not found"));
+        
+        if (video.getIsScheduled() != null && video.getIsScheduled()) {
+            if (video.getScheduledDateTime() != null && 
+                LocalDateTime.now().isBefore(video.getScheduledDateTime())) {
+                throw new IllegalArgumentException("Video is not available yet");
+            }
+        }
+        
         return toVideoResponse(video);
     }
 
@@ -125,12 +152,22 @@ public class VideoService {
                 .map(Tag::getName)
                 .collect(Collectors.toList()));
         response.setUserId(video.getUser().getId());
+        response.setScheduledDateTime(video.getScheduledDateTime());
+        response.setIsScheduled(video.getIsScheduled());
+        response.setDurationSeconds(video.getDurationSeconds());
         return response;
     }
 
     public List<VideoResponse> getVideosByUserId(Long userId) {
         return videoRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
+                .filter(video -> {
+                    if (video.getIsScheduled() != null && video.getIsScheduled()) {
+                        return video.getScheduledDateTime() != null && 
+                               LocalDateTime.now().isAfter(video.getScheduledDateTime());
+                    }
+                    return true;
+                })
                 .map(this::toVideoResponse)
                 .collect(Collectors.toList());
     }

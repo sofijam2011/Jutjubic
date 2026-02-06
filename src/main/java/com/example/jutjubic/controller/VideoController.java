@@ -19,8 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/videos")
@@ -40,6 +44,8 @@ public class VideoController {
             @RequestParam("thumbnail") MultipartFile thumbnail,
             @RequestParam("video") MultipartFile video,
             @RequestParam(value = "location", required = false) String location,
+            @RequestParam(value = "scheduledDateTime", required = false) String scheduledDateTimeString,
+            @RequestParam(value = "durationSeconds", required = false) Long durationSeconds,
             Authentication authentication) {
 
         try {
@@ -54,8 +60,14 @@ public class VideoController {
                     Arrays.asList(tagsString.split(",")) :
                     List.of();
 
+            LocalDateTime scheduledDateTime = null;
+            if (scheduledDateTimeString != null && !scheduledDateTimeString.isEmpty()) {
+                scheduledDateTime = LocalDateTime.parse(scheduledDateTimeString);
+            }
+
             Video uploadedVideo = videoService.uploadVideo(
-                    title, description, tags, thumbnail, video, location, user
+                    title, description, tags, thumbnail, video, location, user,
+                    scheduledDateTime, durationSeconds
             );
 
             return ResponseEntity.ok(uploadedVideo);
@@ -129,6 +141,59 @@ public class VideoController {
                 System.err.println("Video file exists but not readable: " + videoPath);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{id}/streaming-info")
+    public ResponseEntity<Map<String, Object>> getStreamingInfo(@PathVariable Long id) {
+        try {
+            VideoResponse video = videoService.getVideoById(id);
+            Map<String, Object> info = new HashMap<>();
+            
+            if (video.getIsScheduled() != null && video.getIsScheduled() && video.getScheduledDateTime() != null) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime scheduledTime = video.getScheduledDateTime();
+                
+                long offsetSeconds = Duration.between(scheduledTime, now).getSeconds();
+                
+                if (offsetSeconds < 0) {
+                    info.put("available", false);
+                    info.put("message", "Video nije još uvek dostupan");
+                    info.put("scheduledDateTime", scheduledTime.toString());
+                    return ResponseEntity.ok(info);
+                }
+                
+                if (video.getDurationSeconds() != null && offsetSeconds > video.getDurationSeconds()) {
+                    info.put("available", true);
+                    info.put("isScheduled", false);
+                    info.put("canSeek", true);
+                    info.put("offsetSeconds", 0);
+                } else {
+                    info.put("available", true);
+                    info.put("isScheduled", true);
+                    info.put("canSeek", false);
+                    info.put("offsetSeconds", offsetSeconds);
+                    info.put("scheduledDateTime", scheduledTime.toString());
+                    if (video.getDurationSeconds() != null) {
+                        info.put("durationSeconds", video.getDurationSeconds());
+                    }
+                }
+            } else {
+                info.put("available", true);
+                info.put("isScheduled", false);
+                info.put("canSeek", true);
+                info.put("offsetSeconds", 0);
+            }
+            
+            return ResponseEntity.ok(info);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("available", false);
+            errorInfo.put("message", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

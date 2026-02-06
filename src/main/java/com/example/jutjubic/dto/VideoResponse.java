@@ -15,6 +15,9 @@ public class VideoResponse {
     private String location;
     private List<String> tags;
     private Long userId;
+    private LocalDateTime scheduledDateTime;
+    private Boolean isScheduled;
+    private Long durationSeconds;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -48,4 +51,13 @@ public class VideoResponse {
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+
+    public LocalDateTime getScheduledDateTime() { return scheduledDateTime; }
+    public void setScheduledDateTime(LocalDateTime scheduledDateTime) { this.scheduledDateTime = scheduledDateTime; }
+
+    public Boolean getIsScheduled() { return isScheduled; }
+    public void setIsScheduled(Boolean isScheduled) { this.isScheduled = isScheduled; }
+
+    public Long getDurationSeconds() { return durationSeconds; }
+    public void setDurationSeconds(Long durationSeconds) { this.durationSeconds = durationSeconds; }
 }

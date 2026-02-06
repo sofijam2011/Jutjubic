@@ -9,10 +9,13 @@ const VideoUpload = () => {
         title: '',
         description: '',
         tags: '',
-        location: ''
+        location: '',
+        scheduledDateTime: '',
+        isScheduled: false
     });
     const [thumbnail, setThumbnail] = useState(null);
     const [video, setVideo] = useState(null);
+    const [videoDuration, setVideoDuration] = useState(null);
     const [progress, setProgress] = useState(0);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
@@ -49,6 +52,17 @@ const VideoUpload = () => {
                 setError('Video ne može biti veći od 200MB');
                 return;
             }
+            
+            const videoElement = document.createElement('video');
+            videoElement.preload = 'metadata';
+            videoElement.onloadedmetadata = function() {
+                window.URL.revokeObjectURL(videoElement.src);
+                const duration = Math.floor(videoElement.duration);
+                setVideoDuration(duration);
+                console.log('Video duration:', duration, 'seconds');
+            };
+            videoElement.src = URL.createObjectURL(file);
+            
             setVideo(file);
             setError('');
         }
@@ -89,6 +103,14 @@ const VideoUpload = () => {
 
         if (formData.location.trim()) {
             uploadData.append('location', formData.location);
+        }
+
+        if (formData.isScheduled && formData.scheduledDateTime) {
+            uploadData.append('scheduledDateTime', formData.scheduledDateTime);
+        }
+
+        if (videoDuration) {
+            uploadData.append('durationSeconds', videoDuration);
         }
 
         uploadData.append('thumbnail', thumbnail);
@@ -167,6 +189,31 @@ const VideoUpload = () => {
                             onChange={handleChange}
                             placeholder="Beograd, Srbija"
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="isScheduled"
+                                checked={formData.isScheduled}
+                                onChange={(e) => setFormData(prev => ({ ...prev, isScheduled: e.target.checked }))}
+                            />
+                            {' '}Zakazani prikaz
+                        </label>
+                        {formData.isScheduled && (
+                            <div style={{ marginTop: '10px' }}>
+                                <label>Datum i vreme prikaza *</label>
+                                <input
+                                    type="datetime-local"
+                                    name="scheduledDateTime"
+                                    value={formData.scheduledDateTime}
+                                    onChange={handleChange}
+                                    required={formData.isScheduled}
+                                />
+                                <small>Video će biti dostupan za gledanje u zakazano vreme. Svi korisnici će gledati video sinhronizovano.</small>
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">

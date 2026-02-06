@@ -26,10 +26,46 @@
     transform: translateY(-2px);
 }
 
+.streaming-notice {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    background: transparent;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
 .video-player-wrapper {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 2rem;
+    cursor: default;
+    position: relative;
+}
+
+.video-player-wrapper.live-mode {
+    cursor: default;
+}
+
+.video-time-overlay {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .video-element {
@@ -38,6 +74,21 @@
     background-color: #000;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    cursor: default;
+}
+
+.video-element.live-mode {
+    cursor: default;
+}
+
+.video-element::-webkit-media-controls-panel {
+    display: flex !important;
+}
+
+.video-element.live-mode::-webkit-media-controls-play-button,
+.video-element.live-mode::-webkit-media-controls-pause-button,
+.video-element.live-mode::-webkit-media-controls-timeline {
+    display: none !important;
 }
 
 .video-info-section {

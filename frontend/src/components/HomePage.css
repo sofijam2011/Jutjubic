@@ -165,6 +165,14 @@
     line-height: 1.4;
 }
 
+.live-indicator {
+    margin: 0.3rem 0 0.5rem 0;
+    color: #666666;
+    font-weight: bold;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
 .video-author {
     margin: 0 0 0.5rem 0;
     color: #6D8B74;

@@ -35,6 +35,12 @@
     font-size: 14px;
 }
 
+.upload-card .form-group label input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
 .upload-card .form-group input,
 .upload-card .form-group textarea {
     width: 100%;
@@ -45,6 +51,10 @@
     transition: all 0.3s ease;
     box-sizing: border-box;
     font-family: inherit;
+}
+
+.upload-card .form-group input[type="datetime-local"] {
+    cursor: pointer;
 }
 
 .upload-card .form-group textarea {

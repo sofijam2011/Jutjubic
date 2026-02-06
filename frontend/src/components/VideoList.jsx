@@ -75,6 +75,18 @@ const VideoList = () => {
 
                                 <div className="video-info">
                                     <h3>{video.title}</h3>
+                                    {video.isScheduled && 
+                                     video.scheduledDateTime && 
+                                     new Date(video.scheduledDateTime) <= new Date() &&
+                                     video.durationSeconds && 
+                                     (() => {
+                                        const now = new Date();
+                                        const scheduledTime = new Date(video.scheduledDateTime);
+                                        const elapsedSeconds = Math.floor((now - scheduledTime) / 1000);
+                                        return elapsedSeconds < video.durationSeconds;
+                                     })() && (
+                                        <p className="live-indicator">UŽIVO</p>
+                                    )}
                                     <p className="video-author">@{video.username}</p>
                                     <p className="video-views">👁 {video.viewCount} pregleda</p>
 
