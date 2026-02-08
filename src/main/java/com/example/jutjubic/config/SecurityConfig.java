@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/videos/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/map/**").permitAll()
+                        .requestMatchers("/api/popular-videos/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll() // Dozvoli pristup metrikama za Prometheus
                         .anyRequest().authenticated()

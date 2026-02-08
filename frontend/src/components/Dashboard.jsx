@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VideoList from './VideoList';
 import authService from '../services/authService';
+import popularVideoService from '../services/popularVideoService';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const user = authService.getCurrentUser();
+    const [popularVideos, setPopularVideos] = useState([]);
+    const [loadingPopular, setLoadingPopular] = useState(true);
+
+    useEffect(() => {
+        loadPopularVideos();
+    }, []);
+
+    const loadPopularVideos = async () => {
+        try {
+            const data = await popularVideoService.getPopularVideos();
+            setPopularVideos(data);
+        } catch (error) {
+            console.error('Error loading popular videos:', error);
+        } finally {
+            setLoadingPopular(false);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -60,6 +78,47 @@ const Dashboard = () => {
                     </button>
                 </div>
             </nav>
+
+            {/* Popular Videos Section */}
+            {!loadingPopular && popularVideos.length > 0 && (
+                <div className="popular-videos-section">
+                    <h2 className="section-title">
+                        Najpopularniji videi
+                    </h2>
+                    <div className="popular-videos-grid">
+                        {popularVideos.map((video, index) => (
+                            <div
+                                key={video.id}
+                                className="popular-video-card"
+                                onClick={() => navigate(`/video/${video.id}`)}
+                            >
+                                <div className="rank-badge">#{video.rankPosition}</div>
+                                <div className="video-thumbnail">
+                                    <img
+                                        src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
+                                        alt={video.title}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.style.backgroundColor = '#1a1a2e';
+                                        }}
+                                    />
+                                </div>
+                                <div className="video-info">
+                                    <h3>{video.title}</h3>
+                                    <p className="video-author">@{video.username}</p>
+                                    <div className="video-stats">
+                                        <span>👁 {video.viewCount} pregleda</span>
+                                        <span className="popularity-score">
+                                            Bodovi: {video.popularityScore.toFixed(1)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Video List */}
             <VideoList />

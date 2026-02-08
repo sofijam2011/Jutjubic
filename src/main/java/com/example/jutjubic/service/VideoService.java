@@ -4,8 +4,10 @@ import com.example.jutjubic.dto.VideoResponse;
 import com.example.jutjubic.model.Tag;
 import com.example.jutjubic.model.User;
 import com.example.jutjubic.model.Video;
+import com.example.jutjubic.model.VideoView;
 import com.example.jutjubic.repository.TagRepository;
 import com.example.jutjubic.repository.VideoRepository;
+import com.example.jutjubic.repository.VideoViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,9 @@ public class VideoService {
 
     @Autowired
     private MapTileService mapTileService;
+
+    @Autowired
+    private VideoViewRepository videoViewRepository;
 
 
     @Transactional(timeout = 10)
@@ -135,6 +140,12 @@ public class VideoService {
         if (rowsAffected == 0) {
             throw new IllegalArgumentException("Video not found with id: " + videoId);
         }
+
+        // Cuvanje pojedinačnog pregleda sa timestamp-om za ETL pipeline
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("Video not found with id: " + videoId));
+        VideoView videoView = new VideoView(video, LocalDateTime.now());
+        videoViewRepository.save(videoView);
     }
 
     @Cacheable(value = "thumbnails", key = "#videoId")
