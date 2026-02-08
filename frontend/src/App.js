@@ -8,7 +8,8 @@ import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
 import UserProfile from './components/UserProfile';
 import HomePage from './components/HomePage';
-import VideoMap from './components/VideoMap'; // DODATO
+import VideoMap from './components/VideoMap';
+import MonitoringDashboard from './components/MonitoringDashboard';
 
 const PrivateRoute = ({ children }) => {
     const isAuthenticated = !!localStorage.getItem('token');
@@ -27,8 +28,11 @@ function App() {
                     <Route path="/video/:id" element={<VideoPlayer />} />
                     <Route path="/user/:id" element={<UserProfile />} />
 
-                    {/* DODATO - Ruta za mapu */}
+                    {/* Ruta za mapu */}
                     <Route path="/map" element={<VideoMap />} />
+                    
+                    {/* Ruta za monitoring dashboard */}
+                    <Route path="/monitoring" element={<MonitoringDashboard />} />
 
                     <Route
                         path="/dashboard"

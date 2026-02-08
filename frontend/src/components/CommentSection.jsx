@@ -5,7 +5,6 @@ import './CommentSection.css';
 
 const CommentSection = ({ videoId }) => {
     const navigate = useNavigate();
-    const isAuthenticated = !!localStorage.getItem('token');
 
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -32,10 +31,10 @@ const CommentSection = ({ videoId }) => {
     }, [videoId, currentPage]);
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (localStorage.getItem('token')) {
             loadRateLimitStatus();
         }
-    }, [videoId, isAuthenticated]);
+    }, [videoId]);
 
     const loadComments = async (page) => {
         try {
@@ -69,8 +68,10 @@ const CommentSection = ({ videoId }) => {
     const handleSubmitComment = async (e) => {
         e.preventDefault();
 
-        if (!isAuthenticated) {
-            alert('Morate biti prijavljeni da biste komentarisali!');
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Morate biti prijavljeni da biste ostavili komentar!');
             return;
         }
 
@@ -156,7 +157,7 @@ const CommentSection = ({ videoId }) => {
                 </span>
             </div>
 
-            {isAuthenticated ? (
+            {localStorage.getItem('token') ? (
                 <div className="add-comment-form">
                     {remainingComments !== null && (
                         <div className={`rate-limit-info ${getRateLimitClass()}`}>

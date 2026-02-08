@@ -22,10 +22,9 @@ const VideoPlayer = () => {
     const preventPauseRef = useRef(false);
     const userInteracted = useRef(false);
     const lastSyncTime = useRef(0);
-    const isAuthenticated = !!localStorage.getItem('token');
 
     const handleBackNavigation = () => {
-        if (isAuthenticated) {
+        if (!!localStorage.getItem('token')) {
             navigate('/dashboard');
         } else {
             navigate('/');
@@ -33,7 +32,8 @@ const VideoPlayer = () => {
     };
 
     useEffect(() => {
-        console.log('VideoPlayer mounted, authenticated:', isAuthenticated);
+        const token = localStorage.getItem('token');
+        
         loadVideo();
         loadLikeStatus();
 
@@ -184,13 +184,14 @@ const VideoPlayer = () => {
     };
 
     const handleLike = async () => {
-        if (!isAuthenticated) {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
             alert('⚠️ Morate biti prijavljeni da biste lajkovali video!\n\nKliknite "Prijavi se" u meniju.');
             return;
         }
 
         try {
-            const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:8081/api/videos/${id}/likes`, {
                 method: 'POST',
                 headers: {
@@ -262,14 +263,11 @@ const VideoPlayer = () => {
                     </div>
                 )}
                 <video
-                    className="video-element"
-                    controls
-                    autoPlay
-                    poster={`http://localhost:8081/api/videos/${id}/thumbnail`}
-                    ref={videoRef}
                     className={`video-element ${streamingInfo?.isScheduled ? 'live-mode' : ''}`}
                     controls={!streamingInfo?.isScheduled}
                     autoPlay={!streamingInfo?.isScheduled}
+                    poster={`http://localhost:8081/api/videos/${id}/thumbnail`}
+                    ref={videoRef}
                     src={`http://localhost:8081/api/videos/${id}/stream`}
                     onError={(e) => {
                         console.error('Video element error:', e);
@@ -332,11 +330,11 @@ const VideoPlayer = () => {
                     <button
                         className={`like-btn ${liked ? 'liked' : ''}`}
                         onClick={handleLike}
-                        title={!isAuthenticated ? 'Prijavite se da biste lajkovali' : ''}
+                        title={!localStorage.getItem('token') ? 'Prijavite se da biste lajkovali' : ''}
                     >
                         {liked ? '❤️' : '🤍'} {likeCount}
                     </button>
-                    {!isAuthenticated && (
+                    {!localStorage.getItem('token') && (
                         <span className="auth-notice">
                             💡 Prijavite se da biste lajkovali video
                         </span>

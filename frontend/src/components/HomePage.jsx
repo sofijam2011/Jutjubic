@@ -37,6 +37,12 @@ const HomePage = () => {
                 <div className="navbar-actions">
                     <button
                         className="navbar-button map-button"
+                        onClick={() => navigate('/monitoring')}
+                    >
+                        Monitoring
+                    </button>
+                    <button
+                        className="navbar-button map-button"
                         onClick={() => navigate('/map')}
                     >
                         Mapa

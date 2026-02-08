@@ -10,10 +10,8 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const isAuthenticated = !!localStorage.getItem('token');
-
     const handleBackNavigation = () => {
-        if (isAuthenticated) {
+        if (localStorage.getItem('token')) {
             navigate('/dashboard');
         } else {
             navigate('/');

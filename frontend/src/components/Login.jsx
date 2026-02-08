@@ -97,6 +97,12 @@ const Login = () => {
             await authService.login(formData);
             // Uspešna prijava - očisti localStorage ako postoji
             localStorage.removeItem('loginBlockedUntil');
+            
+            // proveri da li je token zaista sačuvan
+            const token = localStorage.getItem('token');
+            console.log('Login successful - Token saved:', !!token);
+            console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null');
+            
             navigate('/dashboard');
         } catch (error) {
             if (error.response && error.response.data) {
