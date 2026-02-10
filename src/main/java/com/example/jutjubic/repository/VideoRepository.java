@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -37,4 +38,11 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     @Query("SELECT COUNT(v) FROM Video v WHERE v.latitude IS NOT NULL AND v.longitude IS NOT NULL")
     long countVideosWithLocation();
+
+    // Metode za kompresiju slika
+    List<Video> findByThumbnailCompressedFalseAndCreatedAtBefore(LocalDateTime date);
+
+    long countByThumbnailCompressed(Boolean compressed);
+
+    long countByThumbnailCompressedFalseAndCreatedAtBefore(LocalDateTime date);
 }

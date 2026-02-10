@@ -55,6 +55,15 @@ public class Video {
     @Column(name = "duration_seconds")
     private Long durationSeconds;
 
+    @Column(name = "thumbnail_compressed")
+    private Boolean thumbnailCompressed = false;
+
+    @Column(name = "thumbnail_compressed_path")
+    private String thumbnailCompressedPath;
+
+    @Column(name = "thumbnail_compression_date")
+    private LocalDateTime thumbnailCompressionDate;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "video_tags",
@@ -185,6 +194,30 @@ public class Video {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Boolean getThumbnailCompressed() {
+        return thumbnailCompressed;
+    }
+
+    public void setThumbnailCompressed(Boolean thumbnailCompressed) {
+        this.thumbnailCompressed = thumbnailCompressed;
+    }
+
+    public String getThumbnailCompressedPath() {
+        return thumbnailCompressedPath;
+    }
+
+    public void setThumbnailCompressedPath(String thumbnailCompressedPath) {
+        this.thumbnailCompressedPath = thumbnailCompressedPath;
+    }
+
+    public LocalDateTime getThumbnailCompressionDate() {
+        return thumbnailCompressionDate;
+    }
+
+    public void setThumbnailCompressionDate(LocalDateTime thumbnailCompressionDate) {
+        this.thumbnailCompressionDate = thumbnailCompressionDate;
     }
 
     // Helper metoda za uploadDate (jer service koristi ovo ime)

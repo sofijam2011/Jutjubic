@@ -40,6 +40,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/map/**").permitAll()
                         .requestMatchers("/api/popular-videos/**").permitAll()
+                        .requestMatchers("/api/compression/**").permitAll() // Compression endpoints
+                        .requestMatchers("/api/transcoding/**").permitAll() // Transcoding endpoints
+                        .requestMatchers("/api/watchparty/**").permitAll() // Watch Party endpoints
+                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoints
+                        .requestMatchers("/watchparty-test.html").permitAll() // Watch Party test page
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll() // Dozvoli pristup metrikama za Prometheus
                         .anyRequest().authenticated()

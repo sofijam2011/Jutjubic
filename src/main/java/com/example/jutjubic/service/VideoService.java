@@ -1,5 +1,6 @@
 package com.example.jutjubic.service;
 
+import com.example.jutjubic.dto.TranscodingMessage;
 import com.example.jutjubic.dto.VideoResponse;
 import com.example.jutjubic.model.Tag;
 import com.example.jutjubic.model.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +42,9 @@ public class VideoService {
 
     @Autowired
     private VideoViewRepository videoViewRepository;
+
+    @Autowired
+    private TranscodingProducer transcodingProducer;
 
 
     @Transactional(timeout = 10)
@@ -97,6 +102,9 @@ public class VideoService {
             mapTileService.updateTileForNewVideo(savedVideo);
 
             fileStorageService.clearUploadTracking();
+
+            // Šaljem transcoding job u RabbitMQ queue
+            sendTranscodingJob(savedVideo);
 
             return savedVideo;
 
@@ -188,5 +196,54 @@ public class VideoService {
                 })
                 .map(this::toVideoResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Šalje transcoding job u RabbitMQ queue nakon što je video uploadovan
+     */
+    private void sendTranscodingJob(Video video) {
+        try {
+            // Kreiram putanju za transkodovani video
+            String originalPath = video.getVideoPath();
+            String outputPath = generateTranscodedVideoPath(originalPath);
+
+            // Koristim predefinisane parametre (720p)
+            TranscodingMessage.TranscodingParams params = TranscodingMessage.TranscodingParams.default720p();
+
+            // Kreiram poruku
+            TranscodingMessage message = new TranscodingMessage(
+                    video.getId(),
+                    originalPath,
+                    outputPath,
+                    params
+            );
+
+            // Šaljem u queue
+            transcodingProducer.sendTranscodingJob(message);
+
+            System.out.println("✅ Transcoding job poslat za video ID: " + video.getId());
+        } catch (Exception e) {
+            System.err.println("⚠️ Greška prilikom slanja transcoding job-a: " + e.getMessage());
+            e.printStackTrace();
+            // Ne bacamo exception da ne bi prekinuli upload proces
+        }
+    }
+
+    /**
+     * Generiše putanju za transkodovani video
+     * Primer: uploads/videos/video_123.mp4 -> uploads/videos/transcoded/video_123_720p.mp4
+     */
+    private String generateTranscodedVideoPath(String originalPath) {
+        File originalFile = new File(originalPath);
+        String parentPath = originalFile.getParent();
+        String fileName = originalFile.getName();
+        String nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+        String extension = fileName.substring(fileName.lastIndexOf('.'));
+
+        // Kreiram transcoded direktorijum
+        String transcodedDir = parentPath + File.separator + "transcoded";
+        new File(transcodedDir).mkdirs();
+
+        return transcodedDir + File.separator + nameWithoutExt + "_720p" + extension;
     }
 }
