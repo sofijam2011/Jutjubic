@@ -1,5 +1,6 @@
 package com.example.jutjubic.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,10 +14,26 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${spring.rabbitmq.host:localhost}")
+    private String rabbitmqHost;
+
+    @Value("${spring.rabbitmq.username:guest}")
+    private String rabbitmqUsername;
+
+    @Value("${spring.rabbitmq.password:guest}")
+    private String rabbitmqPassword;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // Enable simple broker za topic/queue poruke
-        config.enableSimpleBroker("/topic", "/queue");
+        // RabbitMQ STOMP Relay umesto Simple Broker za distributed messaging
+        // Ovo omogućava da poruke idu kroz RabbitMQ i da se skaliraju preko više replika
+        config.enableStompBrokerRelay("/topic", "/queue")
+                .setRelayHost(rabbitmqHost)
+                .setRelayPort(61613)  // STOMP port
+                .setClientLogin(rabbitmqUsername)
+                .setClientPasscode(rabbitmqPassword)
+                .setSystemLogin(rabbitmqUsername)
+                .setSystemPasscode(rabbitmqPassword);
 
         // Prefix za app destination mappings
         config.setApplicationDestinationPrefixes("/app");

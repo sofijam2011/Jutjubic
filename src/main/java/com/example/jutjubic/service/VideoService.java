@@ -1,7 +1,9 @@
 package com.example.jutjubic.service;
 
 import com.example.jutjubic.dto.TranscodingMessage;
+import com.example.jutjubic.dto.UploadEvent;
 import com.example.jutjubic.dto.VideoResponse;
+import com.example.jutjubic.proto.UploadEventProto;
 import com.example.jutjubic.model.Tag;
 import com.example.jutjubic.model.User;
 import com.example.jutjubic.model.Video;
@@ -45,6 +47,9 @@ public class VideoService {
 
     @Autowired
     private TranscodingProducer transcodingProducer;
+
+    @Autowired
+    private UploadEventProducer uploadEventProducer;
 
 
     @Transactional(timeout = 10)
@@ -105,6 +110,9 @@ public class VideoService {
 
             // Šaljem transcoding job u RabbitMQ queue
             sendTranscodingJob(savedVideo);
+
+            // Šaljem upload event
+            sendUploadEvents(savedVideo, video.getSize());
 
             return savedVideo;
 
@@ -226,6 +234,39 @@ public class VideoService {
             System.err.println("⚠️ Greška prilikom slanja transcoding job-a: " + e.getMessage());
             e.printStackTrace();
             // Ne bacamo exception da ne bi prekinuli upload proces
+        }
+    }
+
+    /**
+     * Šalje upload event u JSON i Protobuf formatima
+     */
+    private void sendUploadEvents(Video video, long fileSize) {
+        try {
+            String username = video.getUser().getUsername();
+
+            // JSON format
+            UploadEvent jsonEvent = new UploadEvent(
+                video.getId(),
+                video.getTitle(),
+                fileSize,
+                username
+            );
+            uploadEventProducer.sendJsonEvent(jsonEvent);
+
+            // Protobuf format
+            UploadEventProto.UploadEvent protoEvent = UploadEventProto.UploadEvent.newBuilder()
+                .setVideoId(video.getId())
+                .setNaziv(video.getTitle())
+                .setVelicina(fileSize)
+                .setAutor(username)
+                .setTimestamp(System.currentTimeMillis())
+                .build();
+            uploadEventProducer.sendProtobufEvent(protoEvent);
+
+            System.out.println("✅ Upload eventi poslati (JSON + Protobuf)");
+
+        } catch (Exception e) {
+            System.err.println("⚠️ Greška pri slanju upload event-a: " + e.getMessage());
         }
     }
 

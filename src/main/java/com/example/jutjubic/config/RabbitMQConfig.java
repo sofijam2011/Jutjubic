@@ -15,6 +15,8 @@ public class RabbitMQConfig {
 
     public static final String VIDEO_TRANSCODING_QUEUE = "video.transcoding.queue";
     public static final String VIDEO_TRANSCODING_DLQ = "video.transcoding.dlq"; // Dead Letter Queue
+    public static final String VIDEO_UPLOAD_JSON_QUEUE = "video.upload.json.queue";
+    public static final String VIDEO_UPLOAD_PROTOBUF_QUEUE = "video.upload.protobuf.queue";
 
     /**
      * Kreira queue za transcoding sa exactly-once delivery garantijom
@@ -33,6 +35,16 @@ public class RabbitMQConfig {
     @Bean
     public Queue deadLetterQueue() {
         return QueueBuilder.durable(VIDEO_TRANSCODING_DLQ).build();
+    }
+
+    @Bean
+    public Queue videoUploadJsonQueue() {
+        return QueueBuilder.durable(VIDEO_UPLOAD_JSON_QUEUE).build();
+    }
+
+    @Bean
+    public Queue videoUploadProtobufQueue() {
+        return QueueBuilder.durable(VIDEO_UPLOAD_PROTOBUF_QUEUE).build();
     }
 
     /**

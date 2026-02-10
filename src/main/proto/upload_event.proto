@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "com.example.jutjubic.proto";
+option java_outer_classname = "UploadEventProto";
+
+message UploadEvent {
+  int64 video_id = 1;
+  string naziv = 2;
+  int64 velicina = 3;
+  string autor = 4;
+  int64 timestamp = 5;  // Unix timestamp in milliseconds
+}

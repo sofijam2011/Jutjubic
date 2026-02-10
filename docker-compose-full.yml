@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  # PostgreSQL baza
+  postgres:
+    image: postgres:15
+    container_name: jutjubic-postgres
+    environment:
+      POSTGRES_DB: jutjubic_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jutjubic-network
+
+  # RabbitMQ sa STOMP pluginom
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: jutjubic-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+      - "61613:61613" # STOMP port
+      - "15674:15674" # Web STOMP port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq-plugins.conf:/etc/rabbitmq/enabled_plugins
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jutjubic-network
+
+  # Replica 1
+  app-replica-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jutjubic-app-1
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jutjubic_db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SERVER_PORT: 8080
+      INSTANCE_ID: replica-1
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - app1_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - jutjubic-network
+
+  # Replica 2
+  app-replica-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jutjubic-app-2
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jutjubic_db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SERVER_PORT: 8080
+      INSTANCE_ID: replica-2
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - app2_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - jutjubic-network
+
+  # Nginx Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: jutjubic-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app-replica-1
+      - app-replica-2
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - jutjubic-network
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  app1_uploads:
+  app2_uploads:
+
+networks:
+  jutjubic-network:
+    driver: bridge

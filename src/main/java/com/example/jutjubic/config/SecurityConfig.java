@@ -43,8 +43,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/compression/**").permitAll() // Compression endpoints
                         .requestMatchers("/api/transcoding/**").permitAll() // Transcoding endpoints
                         .requestMatchers("/api/watchparty/**").permitAll() // Watch Party endpoints
+                        .requestMatchers("/api/cluster/**").permitAll() // Cluster test endpoints
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoints
                         .requestMatchers("/watchparty-test.html").permitAll() // Watch Party test page
+                        .requestMatchers("/test-video-chat.html").permitAll() // Video chat test page
+                        .requestMatchers("/index.html").permitAll() // Dashboard
+                        .requestMatchers("/").permitAll() // Root (redirects to index.html)
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll() // Dozvoli pristup metrikama za Prometheus
                         .anyRequest().authenticated()
