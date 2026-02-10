@@ -75,7 +75,7 @@ const VideoUpload = () => {
         e.preventDefault();
 
         if (!formData.title.trim()) {
-            setError('Naslov je obavezan');
+            setError('Naslov je obavezan ');
             return;
         }
         if (!thumbnail) {
