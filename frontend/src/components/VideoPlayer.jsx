@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import videoService from '../services/videoService';
 import './VideoPlayer.css';
 import CommentSection from './CommentSection';
+import LiveChat from './LiveChat';
+import API_BASE_URL from '../config';
 
 const VideoPlayer = () => {
     const { id } = useParams();
@@ -74,7 +76,7 @@ const VideoPlayer = () => {
 
     const loadStreamingInfo = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/videos/${id}/streaming-info`);
+            const response = await fetch(`${API_BASE_URL}/api/videos/${id}/streaming-info`);
             const info = await response.json();
             console.log('Streaming info:', info);
             setStreamingInfo(info);
@@ -134,7 +136,7 @@ const VideoPlayer = () => {
 
     const syncVideoTime = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/videos/${id}/streaming-info`);
+            const response = await fetch(`${API_BASE_URL}/api/videos/${id}/streaming-info`);
             const info = await response.json();
 
             if (info.available && info.isScheduled && videoRef.current) {
@@ -168,7 +170,7 @@ const VideoPlayer = () => {
             const token = localStorage.getItem('token');
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-            const response = await fetch(`http://localhost:8081/api/videos/${id}/likes/status`, {
+            const response = await fetch(`${API_BASE_URL}/api/videos/${id}/likes/status`, {
                 headers
             });
 
@@ -192,7 +194,7 @@ const VideoPlayer = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8081/api/videos/${id}/likes`, {
+            const response = await fetch(`${API_BASE_URL}/api/videos/${id}/likes`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -266,9 +268,9 @@ const VideoPlayer = () => {
                     className={`video-element ${streamingInfo?.isScheduled ? 'live-mode' : ''}`}
                     controls={!streamingInfo?.isScheduled}
                     autoPlay={!streamingInfo?.isScheduled}
-                    poster={`http://localhost:8081/api/videos/${id}/thumbnail`}
+                    poster={`${API_BASE_URL}/api/videos/${id}/thumbnail`}
                     ref={videoRef}
-                    src={`http://localhost:8081/api/videos/${id}/stream`}
+                    src={`${API_BASE_URL}/api/videos/${id}/stream`}
                     onError={(e) => {
                         console.error('Video element error:', e);
                         console.error('Video src:', e.target.src);
@@ -356,6 +358,9 @@ const VideoPlayer = () => {
                     </div>
                 )}
             </div>
+
+            {/* Live čet */}
+            <LiveChat videoId={id} />
 
             {/* Sekcija za komentare */}
             <CommentSection videoId={id} />

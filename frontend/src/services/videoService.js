@@ -1,7 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
+import API_BASE_URL from '../config';
 
-const API_URL = 'http://localhost:8081/api/videos';
+const API_URL = `${API_BASE_URL}/api/videos`;
 
 const getAuthHeader = () => {
     const token = authService.getToken();
@@ -21,17 +22,23 @@ const videoService = {
     },
 
     getAllVideos: async () => {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL, {
+            headers: getAuthHeader()
+        });
         return response.data;
     },
 
     getVideoById: async (id) => {
-        const response = await axios.get(`${API_URL}/${id}`);
+        const response = await axios.get(`${API_URL}/${id}`, {
+            headers: getAuthHeader()
+        });
         return response.data;
     },
 
     incrementView: async (id) => {
-        await axios.post(`${API_URL}/${id}/view`);
+        await axios.post(`${API_URL}/${id}/view`, {}, {
+            headers: getAuthHeader()
+        });
     },
 
     getThumbnailUrl: (id) => {

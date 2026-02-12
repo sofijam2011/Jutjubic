@@ -1,7 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
+import API_BASE_URL from '../config';
 
-const API_URL = 'http://localhost:8081/api/videos';
+const API_URL = `${API_BASE_URL}/api/videos`;
 
 const getAuthHeader = () => {
     const token = authService.getToken();
@@ -11,7 +12,9 @@ const getAuthHeader = () => {
 const commentService = {
     // dobavi komentare sa paginacijom
     getComments: async (videoId, page = 0, size = 10) => {
-        const response = await axios.get(`${API_URL}/${videoId}/comments?page=${page}&size=${size}`);
+        const response = await axios.get(`${API_URL}/${videoId}/comments?page=${page}&size=${size}`, {
+            headers: getAuthHeader()
+        });
         return response.data;
     },
 
@@ -27,7 +30,9 @@ const commentService = {
 
     // broj komentara
     getCommentCount: async (videoId) => {
-        const response = await axios.get(`${API_URL}/${videoId}/comments/count`);
+        const response = await axios.get(`${API_URL}/${videoId}/comments/count`, {
+            headers: getAuthHeader()
+        });
         return response.data.count;
     },
 

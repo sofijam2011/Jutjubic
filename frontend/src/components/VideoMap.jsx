@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import API_BASE_URL from '../config';
 import './VideoMap.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -41,7 +42,7 @@ const VideoMap = () => {
             const allVideos = [];
 
             const tilePromises = tiles.map(tile =>
-                fetch(`http://localhost:8081/api/map/tiles?zoom=${tile.zoom}&tileX=${tile.x}&tileY=${tile.y}&period=${timePeriod}`)
+                fetch(`${API_BASE_URL}/api/map/tiles?zoom=${tile.zoom}&tileX=${tile.x}&tileY=${tile.y}&period=${timePeriod}`)
                     .then(res => res.json())
                     .catch(err => {
                         console.error(`Greška pri učitavanju tile-a ${tile.x},${tile.y}:`, err);
@@ -223,7 +224,7 @@ const VideoMap = () => {
                         ✕
                     </button>
                     <img
-                        src={`http://localhost:8081/api/videos/${selectedVideo.id}/thumbnail`}
+                        src={`${API_BASE_URL}/api/videos/${selectedVideo.id}/thumbnail`}
                         alt={selectedVideo.title}
                         className="sidebar-thumbnail"
                         onError={(e) => {

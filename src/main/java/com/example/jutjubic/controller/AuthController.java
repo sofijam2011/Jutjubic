@@ -3,12 +3,15 @@ package com.example.jutjubic.controller;
 import com.example.jutjubic.dto.AuthResponse;
 import com.example.jutjubic.dto.LoginRequest;
 import com.example.jutjubic.dto.RegisterRequest;
+import com.example.jutjubic.service.ActiveUserService;
 import com.example.jutjubic.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private ActiveUserService activeUserService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
@@ -58,6 +64,33 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Nalog je uspešno verifikovan! Možete se prijaviti.");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Logout endpoint - uklanja korisnika iz liste aktivnih korisnika
+     * VAŽNO: Ovaj endpoint uklanja korisnika ODMAH iz active_users_count metrike
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication != null && authentication.isAuthenticated()
+                    && !"anonymousUser".equals(authentication.getPrincipal())) {
+                String username = authentication.getName();
+                activeUserService.removeUser(username);
+
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Uspešno ste se odjavili");
+                return ResponseEntity.ok(response);
+            }
+
+            return ResponseEntity.ok(Map.of("message", "Niste bili prijavljeni"));
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());

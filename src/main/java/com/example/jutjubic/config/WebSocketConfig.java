@@ -25,15 +25,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // RabbitMQ STOMP Relay umesto Simple Broker za distributed messaging
-        // Ovo omogućava da poruke idu kroz RabbitMQ i da se skaliraju preko više replika
-        config.enableStompBrokerRelay("/topic", "/queue")
-                .setRelayHost(rabbitmqHost)
-                .setRelayPort(61613)  // STOMP port
-                .setClientLogin(rabbitmqUsername)
-                .setClientPasscode(rabbitmqPassword)
-                .setSystemLogin(rabbitmqUsername)
-                .setSystemPasscode(rabbitmqPassword);
+        // Simple Broker za Watch Party i Video Chat WebSocket komunikaciju
+        config.enableSimpleBroker("/topic", "/queue");
 
         // Prefix za app destination mappings
         config.setApplicationDestinationPrefixes("/app");

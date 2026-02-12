@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class ActiveUserService {
 
-    private static final int ACTIVE_USER_TIMEOUT_SECONDS = 30; 
+    private static final int ACTIVE_USER_TIMEOUT_SECONDS = 300; // 5 minuta 
     
     private final Map<String, LocalDateTime> activeUsers = new ConcurrentHashMap<>();
     private final AtomicInteger activeUserCount = new AtomicInteger(0);
@@ -44,7 +44,7 @@ public class ActiveUserService {
     }
 
     
-    @Scheduled(fixedRate = 5000) // Svakih 5 sekundi
+    @Scheduled(fixedRate = 2000) // Svakih 2 sekunde - češća provera
     public void cleanupInactiveUsers() {
         updateActiveUserCount();
     }

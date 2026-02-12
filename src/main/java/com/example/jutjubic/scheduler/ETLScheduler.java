@@ -15,9 +15,9 @@ public class ETLScheduler {
     @Autowired
     private ETLService etlService;
 
-    
-    @Scheduled(cron = "0 0 2 * * *")
-    public void scheduleETLPipeline() {
+    // Produkcioni scheduler - jednom dnevno u 2h ujutru
+    //@Scheduled(cron = "0 0 2 * * *")
+    /*public void scheduleETLPipeline() {
         logger.info("ETL Scheduler triggered - starting daily ETL pipeline");
         try {
             etlService.runETLPipeline();
@@ -25,11 +25,11 @@ public class ETLScheduler {
         } catch (Exception e) {
             logger.error("ETL Scheduler failed: {}", e.getMessage(), e);
         }
-    }
+    }*/
 
-    //Za testiranje - izvršava ETL pipeline svakih 2 minuta
-    //@Scheduled(cron = "0 */2 * * * *")
-    /*public void scheduleETLPipelineForTesting() {
+    // Za testiranje - izvršava ETL pipeline svakog minuta
+    @Scheduled(cron = "0 * * * * *")
+    public void scheduleETLPipelineForTesting() {
         logger.info("ETL Scheduler triggered - starting ETL pipeline for testing");
         try {
             etlService.runETLPipeline();
@@ -37,5 +37,5 @@ public class ETLScheduler {
         } catch (Exception e) {
             logger.error("ETL Scheduler failed: {}", e.getMessage(), e);
         }
-    }*/
+    }
 }

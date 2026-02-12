@@ -251,7 +251,7 @@
 
             <div class="form-group">
                 <label>WebSocket URL:</label>
-                <input type="text" id="wsUrl" value="http://localhost/ws">
+                <input type="text" id="wsUrl">
             </div>
 
             <button id="connectBtn" class="btn btn-primary">Poveži se</button>
@@ -289,6 +289,9 @@
         let currentVideoId = null;
         let currentUsername = null;
 
+        // Dinamički postavi WebSocket URL na osnovu trenutnog hosta
+        document.getElementById('wsUrl').value = `http://${window.location.hostname}:8081/ws`;
+
         const connectBtn = document.getElementById('connectBtn');
         const disconnectBtn = document.getElementById('disconnectBtn');
         const sendBtn = document.getElementById('sendBtn');
@@ -317,7 +320,7 @@
             const socket = new SockJS(wsUrl);
             stompClient = Stomp.over(socket);
 
-            stompClient.connect({}, () => {
+            stompClient.connect({'username': currentUsername}, () => {
                 console.log('WebSocket povezan!');
                 updateConnectionStatus(true);
 

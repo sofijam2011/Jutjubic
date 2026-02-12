@@ -67,6 +67,38 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .video-notification {
+            display: none;
+            background: #ff6b35;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #ff4500;
+            animation: pulse 1s infinite;
+        }
+        .video-notification a {
+            display: inline-block;
+            margin-top: 10px;
+            background: white;
+            color: #ff6b35;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .video-notification a:hover {
+            background: #fff3ee;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,107,53,0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255,107,53,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+        }
     </style>
 </head>
 <body>
@@ -111,6 +143,12 @@
             <h3>5. Play Video (Creator Only)</h3>
             <input type="number" id="videoId" placeholder="Video ID" value="1">
             <button onclick="playVideo()">Play Video</button>
+        </div>
+
+        <div id="video-notification" class="video-notification">
+            <div id="notification-text">🎬 Kreator je pustio video!</div>
+            <br>
+            <a id="notification-link" href="#" target="_blank">▶ GLEDAJ VIDEO</a>
         </div>
 
         <div class="section">
@@ -256,9 +294,16 @@
                     log('📡 Received message: ' + JSON.stringify(data));
 
                     if (data.action === 'PLAY') {
-                        log('🎬 Opening video: ' + data.videoId + ' - ' + data.videoTitle);
-                        alert(`Video playing: ${data.videoTitle} (ID: ${data.videoId})\n\nIn real app, this would open: /video/${data.videoId}`);
-                        // window.location.href = `/video.html?id=${data.videoId}`;
+                        log('🎬 Kreator je pustio video: ' + data.videoTitle + ' (ID: ' + data.videoId + ')');
+                        const videoUrl = `http://${window.location.hostname}:3000/video/${data.videoId}`;
+                        // Pokazi notifikaciju sa klikabilnim linkom
+                        const notif = document.getElementById('video-notification');
+                        document.getElementById('notification-text').textContent = '🎬 Kreator je pustio: ' + data.videoTitle;
+                        document.getElementById('notification-link').href = videoUrl;
+                        notif.style.display = 'block';
+                        log('👆 Klikni na narandzasti banner da gledas video!');
+                        // Pokusaj automatskog otvaranja (moze biti blokirano)
+                        window.open(videoUrl, '_blank');
                     } else if (data.action === 'STOP') {
                         log('🛑 Room closed by creator');
                         alert('Room has been closed');

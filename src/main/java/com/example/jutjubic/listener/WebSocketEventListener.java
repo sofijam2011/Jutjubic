@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
@@ -28,14 +28,20 @@ public class WebSocketEventListener {
     private final Map<String, SessionInfo> sessionRegistry = new ConcurrentHashMap<>();
 
     /**
-     * Kada se korisnik poveže na WebSocket
+     * Kada se korisnik poveže na WebSocket - čita username iz CONNECT zaglavlja
      */
     @EventListener
-    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
+    public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
 
-        System.out.println("🔌 Nova WebSocket konekcija: " + sessionId);
+        // Čitaj username iz STOMP CONNECT zaglavlja i sačuvaj u session attributes
+        String username = headerAccessor.getFirstNativeHeader("username");
+        if (username != null && headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().put("username", username);
+        }
+
+        System.out.println("🔌 Nova WebSocket konekcija: " + sessionId + " (user: " + username + ")");
     }
 
     /**

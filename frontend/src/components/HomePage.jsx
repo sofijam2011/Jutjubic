@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import videoService from '../services/videoService';
+import API_BASE_URL from '../config';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -84,7 +85,7 @@ const HomePage = () => {
                             >
                                 <div className="video-thumbnail">
                                     <img
-                                        src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
+                                        src={`${API_BASE_URL}/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
                                         onError={(e) => {
                                             e.target.onerror = null;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -25,7 +26,7 @@ const UserProfile = () => {
 
     const loadUserProfile = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/users/${id}`);
+            const response = await fetch(`${API_BASE_URL}/api/users/${id}`);
             if (!response.ok) throw new Error('Korisnik nije pronađen');
             const data = await response.json();
             setProfile(data);
@@ -36,7 +37,7 @@ const UserProfile = () => {
 
     const loadUserVideos = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/users/${id}/videos`);
+            const response = await fetch(`${API_BASE_URL}/api/users/${id}/videos`);
             const data = await response.json();
             setVideos(data);
         } catch (err) {
@@ -109,7 +110,7 @@ const UserProfile = () => {
                             >
                                 <div className="video-thumbnail">
                                     <img
-                                        src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
+                                        src={`${API_BASE_URL}/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
                                         onError={(e) => {
                                             e.target.onerror = null;

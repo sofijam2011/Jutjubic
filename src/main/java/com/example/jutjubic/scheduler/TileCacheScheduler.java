@@ -30,7 +30,7 @@ public class TileCacheScheduler {
 
     private static final int[] ZOOM_LEVELS = {3, 6, 9};
 
-    @Scheduled(cron = "0 */2 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void regenerateTileCache() {
         logger.info("=== POKRETANJE NOĆNOG PRERAČUNAVANJA TILE CACHE-A ===");
         logger.info("Vreme pokretanja: {}", LocalDateTime.now());

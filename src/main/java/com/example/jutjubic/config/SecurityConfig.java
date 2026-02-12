@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/transcoding/**").permitAll() // Transcoding endpoints
                         .requestMatchers("/api/watchparty/**").permitAll() // Watch Party endpoints
                         .requestMatchers("/api/cluster/**").permitAll() // Cluster test endpoints
+                        .requestMatchers("/api/benchmark/**").permitAll() // Benchmark endpoints
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoints
                         .requestMatchers("/watchparty-test.html").permitAll() // Watch Party test page
                         .requestMatchers("/test-video-chat.html").permitAll() // Video chat test page
@@ -65,7 +66,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

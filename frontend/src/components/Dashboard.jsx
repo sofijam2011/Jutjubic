@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import VideoList from './VideoList';
 import authService from '../services/authService';
 import popularVideoService from '../services/popularVideoService';
+import API_BASE_URL from '../config';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -95,7 +96,7 @@ const Dashboard = () => {
                                 <div className="rank-badge">#{video.rankPosition}</div>
                                 <div className="video-thumbnail">
                                     <img
-                                        src={`http://localhost:8081/api/videos/${video.id}/thumbnail`}
+                                        src={`${API_BASE_URL}/api/videos/${video.id}/thumbnail`}
                                         alt={video.title}
                                         onError={(e) => {
                                             e.target.onerror = null;
