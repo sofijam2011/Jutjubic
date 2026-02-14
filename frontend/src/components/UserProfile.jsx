@@ -87,10 +87,10 @@ const UserProfile = () => {
                     <p className="profile-username">@{profile.username}</p>
                     <div className="profile-stats">
                         <span className="stat">
-                            🎬 {profile.videoCount} {profile.videoCount === 1 ? 'video' : 'videa'}
+                            {profile.videoCount} {profile.videoCount === 1 ? 'video' : 'videa'}
                         </span>
                         <span className="stat">
-                            📅 Član od {new Date(profile.createdAt).toLocaleDateString('sr-RS')}
+                            Član od {new Date(profile.createdAt).toLocaleDateString('sr-RS')}
                         </span>
                     </div>
                 </div>
@@ -122,7 +122,7 @@ const UserProfile = () => {
                                 <div className="video-info">
                                     <h3>{video.title}</h3>
                                     <p className="video-meta">
-                                        👁️ {video.viewCount} • {new Date(video.createdAt).toLocaleDateString('sr-RS')}
+                                        {video.viewCount} pregleda • {new Date(video.createdAt).toLocaleDateString('sr-RS')}
                                     </p>
                                 </div>
                             </div>

@@ -23,7 +23,6 @@ public class ProtobufVsJsonBenchmarkTest {
         System.out.println("BENCHMARK: JSON vs PROTOBUF - " + NUM_MESSAGES + " poruka");
         System.out.println("=".repeat(80));
 
-        // Priprema test podataka
         List<UploadEvent> jsonEvents = new ArrayList<>();
         List<UploadEventProto.UploadEvent> protoEvents = new ArrayList<>();
 
@@ -31,7 +30,7 @@ public class ProtobufVsJsonBenchmarkTest {
             UploadEvent jsonEvent = new UploadEvent(
                 (long) i,
                 "Test Video " + i,
-                1024L * 1024 * 50, // 50 MB
+                1024L * 1024 * 50,
                 "user" + i
             );
             jsonEvents.add(jsonEvent);
@@ -46,7 +45,6 @@ public class ProtobufVsJsonBenchmarkTest {
             protoEvents.add(protoEvent);
         }
 
-        // ===== JSON BENCHMARK =====
         System.out.println("\n--- JSON FORMAT ---");
 
         long jsonSerStartTime = System.nanoTime();
@@ -78,7 +76,6 @@ public class ProtobufVsJsonBenchmarkTest {
         System.out.printf("Ukupna veličina:   %d bytes (%.2f KB)\n",
             jsonTotalSize, jsonTotalSize / 1024.0);
 
-        // ===== PROTOBUF BENCHMARK =====
         System.out.println("\n--- PROTOBUF FORMAT ---");
 
         long protoSerStartTime = System.nanoTime();
@@ -110,7 +107,6 @@ public class ProtobufVsJsonBenchmarkTest {
         System.out.printf("Ukupna veličina:   %d bytes (%.2f KB)\n",
             protoTotalSize, protoTotalSize / 1024.0);
 
-        // ===== COMPARISON =====
         System.out.println("\n" + "=".repeat(80));
         System.out.println("POREĐENJE:");
         System.out.println("=".repeat(80));

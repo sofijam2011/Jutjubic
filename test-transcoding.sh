@@ -1,25 +1,19 @@
 #!/bin/bash
 
-# 🧪 Automated Test Script for Video Transcoding System
-# Author: Claude Code
-# Description: Tests transcoding system setup and functionality
 
 set -e
 
 echo "🚀 Starting Video Transcoding System Tests..."
 echo ""
 
-# Colors for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+GREEN='\33[0;32m'
+RED='\33[0;31m'
+YELLOW='\33[1;33m'
+NC='\33[0m'
 
-# Test counter
 TESTS_PASSED=0
 TESTS_FAILED=0
 
-# Function to print test result
 print_result() {
     if [ $1 -eq 0 ]; then
         echo -e "${GREEN}✅ PASS${NC}: $2"
@@ -58,7 +52,6 @@ echo "============================================"
 if docker ps | grep -q jutjubic-rabbitmq; then
     print_result 0 "RabbitMQ container is running"
 
-    # Test RabbitMQ connection
     if curl -s -u guest:guest http://localhost:15672/api/overview > /dev/null 2>&1; then
         print_result 0 "RabbitMQ Management API is accessible"
     else
@@ -79,7 +72,6 @@ echo "============================================"
 if curl -s http://localhost:8081/actuator/health > /dev/null 2>&1; then
     print_result 0 "Spring Boot application is running"
 
-    # Test transcoding health endpoint
     HEALTH_RESPONSE=$(curl -s http://localhost:8081/api/transcoding/health)
 
     if echo "$HEALTH_RESPONSE" | grep -q '"status":"HEALTHY"'; then
@@ -89,14 +81,12 @@ if curl -s http://localhost:8081/actuator/health > /dev/null 2>&1; then
         echo -e "${YELLOW}Response: $HEALTH_RESPONSE${NC}"
     fi
 
-    # Check if FFmpeg is detected by the app
     if echo "$HEALTH_RESPONSE" | grep -q '"installed":true'; then
         print_result 0 "Application detected FFmpeg"
     else
         print_result 1 "Application cannot detect FFmpeg"
     fi
 
-    # Check if RabbitMQ is connected
     if echo "$HEALTH_RESPONSE" | grep -q '"connected":true'; then
         print_result 0 "Application connected to RabbitMQ"
     else
@@ -112,13 +102,11 @@ echo "============================================"
 echo "5️⃣  Testing RabbitMQ Queues"
 echo "============================================"
 if docker ps | grep -q jutjubic-rabbitmq; then
-    # Check if queue exists
     QUEUE_INFO=$(curl -s -u guest:guest http://localhost:15672/api/queues/%2F/video.transcoding.queue 2>/dev/null)
 
     if echo "$QUEUE_INFO" | grep -q "video.transcoding.queue"; then
         print_result 0 "Queue 'video.transcoding.queue' exists"
 
-        # Check consumer count
         CONSUMER_COUNT=$(echo "$QUEUE_INFO" | grep -o '"consumers":[0-9]*' | grep -o '[0-9]*')
         if [ "$CONSUMER_COUNT" -ge 2 ]; then
             print_result 0 "At least 2 consumers connected (found: $CONSUMER_COUNT)"
@@ -129,7 +117,6 @@ if docker ps | grep -q jutjubic-rabbitmq; then
         print_result 1 "Queue 'video.transcoding.queue' does not exist"
     fi
 
-    # Check DLQ
     DLQ_INFO=$(curl -s -u guest:guest http://localhost:15672/api/queues/%2F/video.transcoding.dlq 2>/dev/null)
     if echo "$DLQ_INFO" | grep -q "video.transcoding.dlq"; then
         print_result 0 "Dead Letter Queue exists"

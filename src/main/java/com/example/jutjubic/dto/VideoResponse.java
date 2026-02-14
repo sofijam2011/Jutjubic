@@ -18,6 +18,8 @@ public class VideoResponse {
     private LocalDateTime scheduledDateTime;
     private Boolean isScheduled;
     private Long durationSeconds;
+    private String transcodedVideoPath;
+    private String transcodingStatus;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -60,4 +62,10 @@ public class VideoResponse {
 
     public Long getDurationSeconds() { return durationSeconds; }
     public void setDurationSeconds(Long durationSeconds) { this.durationSeconds = durationSeconds; }
+
+    public String getTranscodedVideoPath() { return transcodedVideoPath; }
+    public void setTranscodedVideoPath(String transcodedVideoPath) { this.transcodedVideoPath = transcodedVideoPath; }
+
+    public String getTranscodingStatus() { return transcodingStatus; }
+    public void setTranscodingStatus(String transcodingStatus) { this.transcodingStatus = transcodingStatus; }
 }

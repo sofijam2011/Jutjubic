@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public class UploadEvent implements Serializable {
     private Long videoId;
     private String naziv;
-    private Long velicina;        // u bajtovima
-    private String autor;         // username
+    private Long velicina;
+    private String autor;
     private LocalDateTime timestamp;
 
     public UploadEvent() {}

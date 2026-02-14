@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# ============================================================
-# Test: 2 simultana uploada -> 2 consumera obradjuju paralelno
-# ============================================================
 
 EMAIL="sveplacamo@gmail.com"
 PASSWORD="Paun123\$"
@@ -28,7 +25,6 @@ echo "=== Saljem 2 uploada ISTOVREMENO ==="
 echo "(Gledaj IntelliJ logove - trebas vidjeti 2 razlicita rabbit-listener threada)"
 echo ""
 
-# Upload 1 u pozadini
 curl -s -X POST "http://localhost:8081/api/videos" \
   -H "Authorization: Bearer $TOKEN" \
   -F "title=Test Video 1 - Consumer A" \
@@ -38,7 +34,6 @@ curl -s -X POST "http://localhost:8081/api/videos" \
   > /tmp/upload1_result.json &
 PID1=$!
 
-# Upload 2 u pozadini (odmah)
 curl -s -X POST "http://localhost:8081/api/videos" \
   -H "Authorization: Bearer $TOKEN" \
   -F "title=Test Video 2 - Consumer B" \

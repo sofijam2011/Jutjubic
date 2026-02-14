@@ -12,15 +12,11 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    // dobavi sve komentare za odredjeni video, sortirane od najnovijeg
     List<Comment> findByVideoOrderByCreatedAtDesc(Video video);
 
-    // dobavi komentare sa paginacijom
     Page<Comment> findByVideoOrderByCreatedAtDesc(Video video, Pageable pageable);
 
-    // dobavi sve komentare za odredjeni video po id-u
     List<Comment> findByVideoIdOrderByCreatedAtDesc(Long videoId);
 
-    // prebroj komentare za odredjeni video
     long countByVideo(Video video);
 }

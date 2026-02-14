@@ -25,14 +25,14 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true)
-                        .maxAge(3600); // Cache preflight response for 1 hour
+                        .maxAge(3600);
             }
 
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
                 registry.addInterceptor(userActivityInterceptor)
                         .addPathPatterns("/**")
-                        .excludePathPatterns("/actuator/**"); 
+                        .excludePathPatterns("/actuator/**");
             }
         };
     }

@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Kontroler za manuelni trigger i monitoring kompresije slika
- */
 @RestController
 @RequestMapping("/api/compression")
 public class ImageCompressionController {
@@ -18,9 +15,6 @@ public class ImageCompressionController {
     @Autowired
     private ImageCompressionService imageCompressionService;
 
-    /**
-     * Manuelni trigger za pokretanje kompresije (za testiranje)
-     */
     @PostMapping("/trigger")
     public ResponseEntity<Map<String, String>> triggerCompression() {
         Map<String, String> response = new HashMap<>();
@@ -36,9 +30,6 @@ public class ImageCompressionController {
         }
     }
 
-    /**
-     * Kompresuje thumbnail za specifičan video (za testiranje)
-     */
     @PostMapping("/video/{videoId}")
     public ResponseEntity<Map<String, String>> compressVideoThumbnail(@PathVariable Long videoId) {
         Map<String, String> response = new HashMap<>();
@@ -62,9 +53,6 @@ public class ImageCompressionController {
         }
     }
 
-    /**
-     * Vraća statistiku kompresije
-     */
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getCompressionStats() {
         ImageCompressionService.CompressionStats stats = imageCompressionService.getCompressionStats();
@@ -79,9 +67,6 @@ public class ImageCompressionController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Info endpoint sa detaljima o konfiguraciji
-     */
     @GetMapping("/info")
     public ResponseEntity<Map<String, Object>> getInfo() {
         Map<String, Object> info = new HashMap<>();

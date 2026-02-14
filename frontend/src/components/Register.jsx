@@ -24,7 +24,6 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    // Očisti grešku za to polje kada korisnik počne da kuca
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -53,7 +52,6 @@ const Register = () => {
     } else if (formData.password.length < 8) {
       newErrors.password = 'Lozinka mora imati najmanje 8 karaktera';
     } else {
-      // Provera da li lozinka sadrži sve potrebne elemente
       const hasLowerCase = /[a-z]/.test(formData.password);
       const hasUpperCase = /[A-Z]/.test(formData.password);
       const hasNumber = /[0-9]/.test(formData.password);
@@ -100,7 +98,6 @@ const Register = () => {
       return;
     }
 
-    // DODATO: Ispis podataka u konzolu
     console.log('Sending registration data:', formData);
 
     setLoading(true);
@@ -114,14 +111,13 @@ const Register = () => {
         navigate('/login');
       }, 3000);
     } catch (error) {
-      // POBOLJŠAN ERROR HANDLING
       console.log('Registration error:', error);
       console.log('Error response:', error.response);
       console.log('Error data:', error.response?.data);
 
       if (error.response && error.response.data) {
         if (typeof error.response.data === 'object' && !error.response.data.error) {
-          
+
           setErrors(error.response.data);
         } else if (error.response.data.error) {
 

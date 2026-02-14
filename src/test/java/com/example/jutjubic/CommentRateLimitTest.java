@@ -132,7 +132,6 @@ public class CommentRateLimitTest {
     public void testRateLimitStatusEndpoint() throws Exception {
         System.out.println("\n=== TEST: Rate Limit Status Endpoint ===\n");
 
-        // posaljem 10 komentara
         for (int i = 1; i <= 10; i++) {
             Map<String, String> commentRequest = new HashMap<>();
             commentRequest.put("text", "Test komentar " + i);
@@ -146,7 +145,6 @@ public class CommentRateLimitTest {
 
         System.out.println("✅ Poslato 10 komentara");
 
-        // proverim status
         MvcResult afterResult = mockMvc.perform(
                         get("/api/videos/" + testVideo.getId() + "/comments/rate-limit")
                                 .header("Authorization", "Bearer " + jwtToken))
@@ -167,7 +165,6 @@ public class CommentRateLimitTest {
     public void testRateLimitPerUser() throws Exception {
         System.out.println("\n=== TEST: Nezavisni Rate Limit Po Korisniku ===\n");
 
-        // kreiram drugog korisnika sa unique podacima
         String uniqueId2 = UUID.randomUUID().toString().substring(0, 8);
         User secondUser = new User();
         secondUser.setEmail("seconduser" + uniqueId2 + "@test.com");
@@ -181,7 +178,6 @@ public class CommentRateLimitTest {
 
         String secondUserToken = jwtService.generateToken(secondUser.getEmail());
 
-        // prvi korisnik salje 60 komentara
         for (int i = 1; i <= 60; i++) {
             Map<String, String> commentRequest = new HashMap<>();
             commentRequest.put("text", "Komentar prvog korisnika " + i);
@@ -195,7 +191,6 @@ public class CommentRateLimitTest {
 
         System.out.println("✅ Prvi korisnik: Poslao 60 komentara (dostigao limit)");
 
-        // prvi korisnik pokusava 61. komentar
         Map<String, String> firstUserExtraComment = new HashMap<>();
         firstUserExtraComment.put("text", "61. komentar prvog korisnika");
 
@@ -207,7 +202,6 @@ public class CommentRateLimitTest {
 
         System.out.println("❌ Prvi korisnik: 61. komentar odbijen (rate limited)");
 
-        // drugi korisnik salje komentar (trebalo bi da uspe)
         Map<String, String> secondUserComment = new HashMap<>();
         secondUserComment.put("text", "Komentar drugog korisnika");
 

@@ -16,10 +16,6 @@ public class BenchmarkController {
     @Autowired
     private SerializationBenchmarkService benchmarkService;
 
-    /**
-     * Pokreće poređenje JSON vs Protobuf serijalizacije na 50 upload event poruka.
-     * GET /api/benchmark/serialization
-     */
     @GetMapping("/serialization")
     public ResponseEntity<Map<String, Object>> poredjenjeSerijalicazije() {
         try {

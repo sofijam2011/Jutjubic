@@ -32,7 +32,7 @@ const VideoMap = () => {
     const [loading, setLoading] = useState(false);
     const [currentZoom, setCurrentZoom] = useState(5);
     const [selectedVideo, setSelectedVideo] = useState(null);
-    
+
     const mapRef = useRef(null);
 
     const fetchTilesForView = useCallback(async (bounds, zoom) => {
@@ -128,21 +128,21 @@ const VideoMap = () => {
         <div className="video-map-container">
             <div className="map-header">
                 <h1>Mapa Video Snimaka</h1>
-                
+
                 <div className="time-filter">
-                    <button 
+                    <button
                         className={timePeriod === 'ALL_TIME' ? 'active' : ''}
                         onClick={() => handlePeriodChange('ALL_TIME')}
                     >
                         Sve vreme
                     </button>
-                    <button 
+                    <button
                         className={timePeriod === 'LAST_30_DAYS' ? 'active' : ''}
                         onClick={() => handlePeriodChange('LAST_30_DAYS')}
                     >
                         Poslednjih 30 dana
                     </button>
-                    <button 
+                    <button
                         className={timePeriod === 'CURRENT_YEAR' ? 'active' : ''}
                         onClick={() => handlePeriodChange('CURRENT_YEAR')}
                     >
@@ -169,7 +169,7 @@ const VideoMap = () => {
                 <MapEventHandler />
 
                 {videos.map((video) => {
-                    const markerIcon = video.clusterSize > 1 
+                    const markerIcon = video.clusterSize > 1
                         ? createClusterIcon(video.clusterSize)
                         : DefaultIcon;
 
@@ -200,7 +200,7 @@ const VideoMap = () => {
                                     <p className="upload-date">
                                         {new Date(video.uploadDate).toLocaleDateString('sr-RS')}
                                     </p>
-                                    <a 
+                                    <a
                                         href={`/video/${video.id}`}
                                         className="watch-btn"
                                         target="_blank"
@@ -217,7 +217,7 @@ const VideoMap = () => {
 
             {selectedVideo && (
                 <div className="video-sidebar">
-                    <button 
+                    <button
                         className="close-sidebar"
                         onClick={() => setSelectedVideo(null)}
                     >
@@ -245,7 +245,7 @@ const VideoMap = () => {
                              {selectedVideo.clusterSize} videa na lokaciji
                         </div>
                     )}
-                    <a 
+                    <a
                         href={`/video/${selectedVideo.id}`}
                         className="watch-btn-large"
                     >

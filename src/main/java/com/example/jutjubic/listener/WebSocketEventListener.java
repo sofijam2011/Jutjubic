@@ -11,114 +11,122 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Event listener za WebSocket događaje
- * Automatski šalje JOIN/LEAVE poruke kada se korisnici konektuju/diskonektuju
- */
 @Component
 public class WebSocketEventListener {
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    // Mapiranje session ID -> (videoId, username)
+    // sessionId -> SessionInfo
     private final Map<String, SessionInfo> sessionRegistry = new ConcurrentHashMap<>();
 
-    /**
-     * Kada se korisnik poveže na WebSocket - čita username iz CONNECT zaglavlja
-     */
+    // videoId -> Set of unique usernames currently watching
+    private final Map<Long, Set<String>> videoViewers = new ConcurrentHashMap<>();
+
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
-
-        // Čitaj username iz STOMP CONNECT zaglavlja i sačuvaj u session attributes
-        String username = headerAccessor.getFirstNativeHeader("username");
-        if (username != null && headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().put("username", username);
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String username = accessor.getFirstNativeHeader("username");
+        if (username != null && accessor.getSessionAttributes() != null) {
+            accessor.getSessionAttributes().put("username", username);
         }
-
-        System.out.println("🔌 Nova WebSocket konekcija: " + sessionId + " (user: " + username + ")");
     }
 
-    /**
-     * Kada se korisnik pretplati na topic (npr. /topic/video/{videoId}/chat)
-     * Automatski šalje JOIN poruku ostalim korisnicima
-     */
     @EventListener
     public void handleSubscribeEvent(SessionSubscribeEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
-        String destination = headerAccessor.getDestination();
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String sessionId = accessor.getSessionId();
+        String destination = accessor.getDestination();
 
-        // Ekstraktuj username iz session attributes (ako postoji)
-        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-        String username = sessionAttributes != null ?
-                (String) sessionAttributes.get("username") : "Anonymous";
+        if (destination == null) return;
 
-        // Proveri da li se pretplaćuje na video čet
-        if (destination != null && destination.matches("/topic/video/\\d+/chat")) {
-            // Ekstraktuj videoId iz destination
-            String videoIdStr = destination.replaceAll(".*/video/(\\d+)/chat", "$1");
-            try {
-                Long videoId = Long.parseLong(videoIdStr);
+        if (!destination.matches("/topic/video/\\d+/chat")) return;
 
-                // Sačuvaj informacije o sesiji
-                sessionRegistry.put(sessionId, new SessionInfo(videoId, username));
+        Map<String, Object> attrs = accessor.getSessionAttributes();
+        String username = (attrs != null && attrs.get("username") != null)
+                ? (String) attrs.get("username") : "Gost_" + sessionId;
 
-                // Pošalji JOIN poruku
-                VideoChatMessage joinMessage = new VideoChatMessage();
-                joinMessage.setUsername(username);
-                joinMessage.setMessage(username + " se pridružio četu");
-                joinMessage.setVideoId(videoId);
-                joinMessage.setTimestamp(LocalDateTime.now());
-                joinMessage.setType(VideoChatMessage.MessageType.JOIN);
-
-                messagingTemplate.convertAndSend(destination, joinMessage);
-
-                System.out.println("👋 " + username + " se pridružio četu za video " + videoId);
-
-            } catch (NumberFormatException e) {
-                System.err.println("❌ Greška pri parsiranju videoId: " + videoIdStr);
-            }
+        String videoIdStr = destination.replaceAll(".*/video/(\\d+)/chat", "$1");
+        Long videoId;
+        try {
+            videoId = Long.parseLong(videoIdStr);
+        } catch (NumberFormatException e) {
+            return;
         }
+
+        sessionRegistry.put(sessionId, new SessionInfo(videoId, username));
+
+        Set<String> viewers = videoViewers.computeIfAbsent(videoId,
+                k -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
+
+        boolean isNewViewer = viewers.add(username);
+
+        if (isNewViewer) {
+            VideoChatMessage joinMsg = new VideoChatMessage();
+            joinMsg.setUsername(username);
+            joinMsg.setMessage(username + " se pridružio četu");
+            joinMsg.setVideoId(videoId);
+            joinMsg.setTimestamp(LocalDateTime.now());
+            joinMsg.setType(VideoChatMessage.MessageType.JOIN);
+            messagingTemplate.convertAndSend(destination, joinMsg);
+        }
+
+        broadcastViewerCount(videoId);
     }
 
-    /**
-     * Kada se korisnik diskontektuje
-     * Automatski šalje LEAVE poruku ostalim korisnicima
-     */
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String sessionId = accessor.getSessionId();
 
-        // Dohvati informacije o sesiji
-        SessionInfo sessionInfo = sessionRegistry.remove(sessionId);
+        SessionInfo info = sessionRegistry.remove(sessionId);
+        if (info == null) return;
 
-        if (sessionInfo != null) {
-            VideoChatMessage leaveMessage = new VideoChatMessage();
-            leaveMessage.setUsername(sessionInfo.username);
-            leaveMessage.setMessage(sessionInfo.username + " je napustio čet");
-            leaveMessage.setVideoId(sessionInfo.videoId);
-            leaveMessage.setTimestamp(LocalDateTime.now());
-            leaveMessage.setType(VideoChatMessage.MessageType.LEAVE);
+        // Provjeri da li isti username ima još aktivnih sesija za ovaj video
+        boolean stillHasSession = sessionRegistry.values().stream()
+                .anyMatch(s -> info.videoId.equals(s.videoId) && info.username.equals(s.username));
 
-            String destination = "/topic/video/" + sessionInfo.videoId + "/chat";
-            messagingTemplate.convertAndSend(destination, leaveMessage);
+        if (!stillHasSession) {
+            Set<String> viewers = videoViewers.get(info.videoId);
+            if (viewers != null) {
+                viewers.remove(info.username);
+                if (viewers.isEmpty()) videoViewers.remove(info.videoId);
+            }
 
-            System.out.println("👋 " + sessionInfo.username + " je napustio čet za video " + sessionInfo.videoId);
+            VideoChatMessage leaveMsg = new VideoChatMessage();
+            leaveMsg.setUsername(info.username);
+            leaveMsg.setMessage(info.username + " je napustio čet");
+            leaveMsg.setVideoId(info.videoId);
+            leaveMsg.setTimestamp(LocalDateTime.now());
+            leaveMsg.setType(VideoChatMessage.MessageType.LEAVE);
+
+            messagingTemplate.convertAndSend("/topic/video/" + info.videoId + "/chat", leaveMsg);
+            broadcastViewerCount(info.videoId);
         }
-
-        System.out.println("🔌 WebSocket diskonektovan: " + sessionId);
     }
 
-    /**
-     * Helper klasa za čuvanje informacija o sesiji
-     */
+    public int getViewerCount(Long videoId) {
+        return videoViewers.getOrDefault(videoId, Collections.emptySet()).size();
+    }
+
+    private void broadcastViewerCount(Long videoId) {
+        Set<String> viewers = videoViewers.getOrDefault(videoId, Collections.emptySet());
+        System.out.println("[WS] broadcastViewerCount videoId=" + videoId + " count=" + viewers.size());
+
+        VideoChatMessage countMsg = new VideoChatMessage();
+        countMsg.setVideoId(videoId);
+        countMsg.setType(VideoChatMessage.MessageType.VIEWER_COUNT);
+        countMsg.setViewerCount(viewers.size());
+        countMsg.setTimestamp(LocalDateTime.now());
+
+        messagingTemplate.convertAndSend("/topic/video/" + videoId + "/viewers", countMsg);
+    }
+
     private static class SessionInfo {
         final Long videoId;
         final String username;

@@ -26,7 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Preskoči JWT proveru SAMO za auth endpoint-e (login/register ne trebaju JWT)
         String path = request.getRequestURI();
 
         if (path.startsWith("/api/auth/") ||
@@ -35,8 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Za SVE OSTALE endpoint-e: validuj JWT AKO POSTOJI
-        // Ovo omogućava i public pristup (bez tokena) i praćenje ulogovanih korisnika
         try {
             String jwt = getJwtFromRequest(request);
 

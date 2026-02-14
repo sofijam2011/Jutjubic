@@ -1,15 +1,12 @@
 package com.example.jutjubic.dto;
 
-/**
- * Poruka koja se šalje preko WebSocket-a kada kreator promeni video
- */
 public class VideoChangeMessage {
 
     private String roomCode;
     private Long videoId;
     private String videoTitle;
     private String creatorUsername;
-    private String action; // "PLAY", "STOP", "CHANGE"
+    private String action;
 
     public VideoChangeMessage() {}
 
@@ -21,7 +18,6 @@ public class VideoChangeMessage {
         this.action = action;
     }
 
-    // Getters and Setters
     public String getRoomCode() {
         return roomCode;
     }

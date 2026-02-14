@@ -15,7 +15,6 @@ const Login = () => {
     const [isBlocked, setIsBlocked] = useState(false);
     const [remainingTime, setRemainingTime] = useState(0);
 
-    // Proveri localStorage pri učitavanju komponente
     useEffect(() => {
         const blockUntil = localStorage.getItem('loginBlockedUntil');
         if (blockUntil) {
@@ -23,19 +22,16 @@ const Login = () => {
             const now = Date.now();
 
             if (now < blockTime) {
-                // Još uvek blokiran
                 const secondsLeft = Math.ceil((blockTime - now) / 1000);
                 setIsBlocked(true);
                 setRemainingTime(secondsLeft);
                 setMessage('Previše pokušaja prijave. Pokušajte ponovo za 1 minut.');
             } else {
-                // Blokada je istekla, očisti localStorage
                 localStorage.removeItem('loginBlockedUntil');
             }
         }
     }, []);
 
-    // Countdown timer
     useEffect(() => {
         if (remainingTime > 0) {
             const timer = setTimeout(() => {
@@ -43,7 +39,6 @@ const Login = () => {
             }, 1000);
             return () => clearTimeout(timer);
         } else if (remainingTime === 0 && isBlocked) {
-            // Kada istekne vreme, omogući ponovo i očisti localStorage
             setIsBlocked(false);
             localStorage.removeItem('loginBlockedUntil');
             setMessage('Možete pokušati ponovo sa prijavom.');
@@ -62,7 +57,6 @@ const Login = () => {
                 [name]: ''
             }));
         }
-        // Očisti poruku kada korisnik počne da kuca
         if (message && !isBlocked) {
             setMessage('');
         }
@@ -71,7 +65,6 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Proveri da li je blokiran
         if (isBlocked) {
             return;
         }
@@ -95,22 +88,19 @@ const Login = () => {
 
         try {
             await authService.login(formData);
-            // Uspešna prijava - očisti localStorage ako postoji
             localStorage.removeItem('loginBlockedUntil');
-            
-            // proveri da li je token zaista sačuvan
+
             const token = localStorage.getItem('token');
             console.log('Login successful - Token saved:', !!token);
             console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null');
-            
+
             navigate('/dashboard');
         } catch (error) {
             if (error.response && error.response.data) {
                 const errorMessage = error.response.data.error;
 
-                // Proveri da li je poruka o blokiranju
                 if (errorMessage && errorMessage.includes('Previše pokušaja')) {
-                    const blockUntil = Date.now() + (60 * 1000); // Trenutno vreme + 60 sekundi
+                    const blockUntil = Date.now() + (60 * 1000);
                     localStorage.setItem('loginBlockedUntil', blockUntil.toString());
 
                     setIsBlocked(true);
@@ -129,7 +119,6 @@ const Login = () => {
         }
     };
 
-    // Formatiranje vremena (MM:SS)
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;

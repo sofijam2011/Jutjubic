@@ -40,18 +40,18 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/map/**").permitAll()
                         .requestMatchers("/api/popular-videos/**").permitAll()
-                        .requestMatchers("/api/compression/**").permitAll() // Compression endpoints
-                        .requestMatchers("/api/transcoding/**").permitAll() // Transcoding endpoints
-                        .requestMatchers("/api/watchparty/**").permitAll() // Watch Party endpoints
-                        .requestMatchers("/api/cluster/**").permitAll() // Cluster test endpoints
-                        .requestMatchers("/api/benchmark/**").permitAll() // Benchmark endpoints
-                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoints
-                        .requestMatchers("/watchparty-test.html").permitAll() // Watch Party test page
-                        .requestMatchers("/test-video-chat.html").permitAll() // Video chat test page
-                        .requestMatchers("/index.html").permitAll() // Dashboard
-                        .requestMatchers("/").permitAll() // Root (redirects to index.html)
+                        .requestMatchers("/api/compression/**").permitAll()
+                        .requestMatchers("/api/transcoding/**").permitAll()
+                        .requestMatchers("/api/watchparty/**").permitAll()
+                        .requestMatchers("/api/cluster/**").permitAll()
+                        .requestMatchers("/api/benchmark/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/watchparty-test.html").permitAll()
+                        .requestMatchers("/test-video-chat.html").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll() // Dozvoli pristup metrikama za Prometheus
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

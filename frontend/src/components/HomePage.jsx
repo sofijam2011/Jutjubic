@@ -96,10 +96,10 @@ const HomePage = () => {
                                 </div>
                                 <div className="video-info">
                                     <h3>{video.title}</h3>
-                                    {video.isScheduled && 
-                                     video.scheduledDateTime && 
+                                    {video.isScheduled &&
+                                     video.scheduledDateTime &&
                                      new Date(video.scheduledDateTime) <= new Date() &&
-                                     video.durationSeconds && 
+                                     video.durationSeconds &&
                                      (() => {
                                         const now = new Date();
                                         const scheduledTime = new Date(video.scheduledDateTime);
@@ -118,10 +118,10 @@ const HomePage = () => {
                                         @{video.username}
                                     </p>
                                     <p className="video-meta">
-                                        👁️ {video.viewCount} pregleda • {new Date(video.createdAt).toLocaleDateString('sr-RS')}
+                                        {video.viewCount} pregleda • {new Date(video.createdAt).toLocaleDateString('sr-RS')}
                                     </p>
                                     {video.location && (
-                                        <p className="video-location">📍 {video.location}</p>
+                                        <p className="video-location">{video.location}</p>
                                     )}
                                 </div>
                             </div>

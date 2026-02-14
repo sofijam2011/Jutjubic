@@ -7,103 +7,236 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
+        :root {
+            --teal-deep: #00403d;
+            --teal-primary: #005955;
+            --teal-light: #007970;
+            --terracotta: #d3817a;
+            --terracotta-dim: #b86f6a;
+            --cream: #f5f3f0;
+            --beige: #dddad7;
+            --beige-dark: #c4c1be;
+            --text-primary: #2a2a2a;
+            --text-secondary: #5a5a5a;
+            --text-on-dark: #f5f3f0;
+            --border: rgba(0, 64, 61, 0.12);
+            --shadow-sm: 0 2px 12px rgba(0, 64, 61, 0.08);
+            --shadow: 0 4px 24px rgba(0, 64, 61, 0.12);
+            --shadow-lg: 0 8px 48px rgba(0, 64, 61, 0.18);
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--beige) 0%, var(--cream) 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--text-primary);
         }
+
         .container {
+            max-width: 900px;
+            margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
         }
+
         h1 {
-            color: #333;
+            color: var(--teal-deep);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: -0.02em;
+            position: relative;
+            padding-bottom: 15px;
         }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--teal-primary), var(--terracotta));
+            border-radius: 2px;
+        }
+
+        h3 {
+            color: var(--teal-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
         .section {
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 5px;
+            margin: 25px 0;
+            padding: 25px;
+            background: var(--cream);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
-        input, button {
-            padding: 10px;
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"] {
+            padding: 12px 16px;
             margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            background: white;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.3s;
         }
+
+        input:focus {
+            outline: none;
+            border-color: var(--teal-primary);
+            box-shadow: 0 0 0 4px rgba(0, 89, 85, 0.1);
+        }
+
         button {
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: var(--radius);
             border: none;
+            background: var(--teal-primary);
+            color: var(--text-on-dark);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
         }
+
         button:hover {
-            background: #45a049;
+            background: var(--teal-deep);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
+
+        button.secondary {
+            background: var(--terracotta);
+        }
+
+        button.secondary:hover {
+            background: var(--terracotta-dim);
+        }
+
         .log {
-            background: #1e1e1e;
-            color: #00ff00;
-            padding: 10px;
-            border-radius: 5px;
-            height: 200px;
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 15px;
+            border-radius: var(--radius);
+            height: 250px;
             overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
         }
+
         .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin: 15px 0;
+            font-weight: 600;
+            text-align: center;
         }
+
         .connected {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(168, 181, 161, 0.2);
+            color: var(--teal-deep);
+            border: 2px solid var(--teal-primary);
         }
+
         .disconnected {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(211, 129, 122, 0.15);
+            color: var(--terracotta-dim);
+            border: 2px solid var(--terracotta);
         }
+
         .video-notification {
             display: none;
-            background: #ff6b35;
+            background: linear-gradient(135deg, var(--teal-deep), var(--teal-primary));
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            margin: 20px 0;
             text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border: 3px solid #ff4500;
-            animation: pulse 1s infinite;
+            font-size: 1.25rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-lg);
         }
+
         .video-notification a {
             display: inline-block;
-            margin-top: 10px;
-            background: white;
-            color: #ff6b35;
-            padding: 12px 30px;
-            border-radius: 25px;
+            margin-top: 15px;
+            background: var(--terracotta);
+            color: white;
+            padding: 14px 35px;
+            border-radius: var(--radius);
             text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s;
         }
+
         .video-notification a:hover {
-            background: #fff3ee;
+            background: var(--terracotta-dim);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255,107,53,0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255,107,53,0); }
-            100% { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+
+        .token-display,
+        .room-code {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: var(--text-secondary);
+        }
+
+        .room-code {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--teal-deep);
+            text-align: center;
+        }
+
+        label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--teal-primary);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎬 Watch Party Test Page</h1>
+        <h1>Watch Party Test</h1>
 
         <div class="section">
             <h3>Status</h3>
@@ -115,15 +248,15 @@
             <input type="email" id="email" placeholder="Email" value="test@example.com">
             <input type="password" id="password" placeholder="Password" value="password">
             <button onclick="login()">Login</button>
-            <div id="token-display" style="margin-top: 10px; word-break: break-all; font-size: 12px;"></div>
+            <div id="token-display" class="token-display"></div>
         </div>
 
         <div class="section">
             <h3>2. Create Room</h3>
             <input type="text" id="roomName" placeholder="Room Name" value="Test Room">
-            <label><input type="checkbox" id="isPublic" checked> Public</label>
+            <label><input type="checkbox" id="isPublic" checked> Public Room</label>
             <button onclick="createRoom()">Create Room</button>
-            <div id="room-code" style="margin-top: 10px; font-size: 18px; font-weight: bold;"></div>
+            <div id="room-code" class="room-code"></div>
         </div>
 
         <div class="section">
@@ -136,7 +269,7 @@
             <h3>4. Connect to WebSocket</h3>
             <input type="text" id="wsRoomCode" placeholder="Room Code">
             <button onclick="connectWebSocket()">Connect</button>
-            <button onclick="disconnectWebSocket()">Disconnect</button>
+            <button class="secondary" onclick="disconnectWebSocket()">Disconnect</button>
         </div>
 
         <div class="section">
@@ -146,15 +279,15 @@
         </div>
 
         <div id="video-notification" class="video-notification">
-            <div id="notification-text">🎬 Kreator je pustio video!</div>
+            <div id="notification-text">Creator has started a video</div>
             <br>
-            <a id="notification-link" href="#" target="_blank">▶ GLEDAJ VIDEO</a>
+            <a id="notification-link" href="#" target="_blank">WATCH VIDEO</a>
         </div>
 
         <div class="section">
             <h3>Log</h3>
             <div class="log" id="log"></div>
-            <button onclick="clearLog()">Clear Log</button>
+            <button class="secondary" onclick="clearLog()">Clear Log</button>
         </div>
     </div>
 
@@ -179,10 +312,10 @@
             const statusDiv = document.getElementById('status');
             if (connected) {
                 statusDiv.className = 'status connected';
-                statusDiv.textContent = '✅ Connected to WebSocket';
+                statusDiv.textContent = 'Connected to WebSocket';
             } else {
                 statusDiv.className = 'status disconnected';
-                statusDiv.textContent = '❌ Disconnected';
+                statusDiv.textContent = 'Disconnected';
             }
         }
 
@@ -200,19 +333,19 @@
                 const data = await response.json();
                 if (data.token) {
                     jwtToken = data.token;
-                    log('✅ Login successful');
+                    log('[SUCCESS] Login successful');
                     document.getElementById('token-display').textContent = 'Token: ' + jwtToken.substring(0, 50) + '...';
                 } else {
-                    log('❌ Login failed: ' + JSON.stringify(data));
+                    log('[ERROR] Login failed: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                log('❌ Login error: ' + error.message);
+                log('[ERROR] Login error: ' + error.message);
             }
         }
 
         async function createRoom() {
             if (!jwtToken) {
-                log('❌ Please login first');
+                log('[ERROR] Please login first');
                 return;
             }
 
@@ -232,21 +365,21 @@
                 const data = await response.json();
                 if (data.success) {
                     currentRoomCode = data.room.roomCode;
-                    log('✅ Room created: ' + currentRoomCode);
-                    document.getElementById('room-code').textContent = '🎬 Room Code: ' + currentRoomCode;
+                    log('[SUCCESS] Room created: ' + currentRoomCode);
+                    document.getElementById('room-code').textContent = 'Room Code: ' + currentRoomCode;
                     document.getElementById('wsRoomCode').value = currentRoomCode;
                     document.getElementById('joinRoomCode').value = currentRoomCode;
                 } else {
-                    log('❌ Create room failed: ' + JSON.stringify(data));
+                    log('[ERROR] Create room failed: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                log('❌ Create room error: ' + error.message);
+                log('[ERROR] Create room error: ' + error.message);
             }
         }
 
         async function joinRoom() {
             if (!jwtToken) {
-                log('❌ Please login first');
+                log('[ERROR] Please login first');
                 return;
             }
 
@@ -263,56 +396,56 @@
                 const data = await response.json();
                 if (data.success) {
                     currentRoomCode = roomCode;
-                    log('✅ Joined room: ' + roomCode);
+                    log('[SUCCESS] Joined room: ' + roomCode);
                     document.getElementById('wsRoomCode').value = roomCode;
                 } else {
-                    log('❌ Join room failed: ' + JSON.stringify(data));
+                    log('[ERROR] Join room failed: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                log('❌ Join room error: ' + error.message);
+                log('[ERROR] Join room error: ' + error.message);
             }
         }
 
         function connectWebSocket() {
             const roomCode = document.getElementById('wsRoomCode').value;
             if (!roomCode) {
-                log('❌ Please enter room code');
+                log('[ERROR] Please enter room code');
                 return;
             }
 
-            log('🔌 Connecting to WebSocket...');
+            log('[INFO] Connecting to WebSocket...');
 
             const socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, function(frame) {
-                log('✅ WebSocket connected');
+                log('[SUCCESS] WebSocket connected');
                 updateStatus(true);
 
                 stompClient.subscribe(`/topic/watchparty/${roomCode}`, function(message) {
                     const data = JSON.parse(message.body);
-                    log('📡 Received message: ' + JSON.stringify(data));
+                    log('[MESSAGE] Received: ' + JSON.stringify(data));
 
                     if (data.action === 'PLAY') {
-                        log('🎬 Kreator je pustio video: ' + data.videoTitle + ' (ID: ' + data.videoId + ')');
+                        log('[VIDEO] Creator started: ' + data.videoTitle + ' (ID: ' + data.videoId + ')');
                         const videoUrl = `http://${window.location.hostname}:3000/video/${data.videoId}`;
-                        // Pokazi notifikaciju sa klikabilnim linkom
                         const notif = document.getElementById('video-notification');
-                        document.getElementById('notification-text').textContent = '🎬 Kreator je pustio: ' + data.videoTitle;
+                        document.getElementById('notification-text').textContent = 'Kreator pokrenuo: ' + data.videoTitle + ' — preusmjeravam...';
                         document.getElementById('notification-link').href = videoUrl;
                         notif.style.display = 'block';
-                        log('👆 Klikni na narandzasti banner da gledas video!');
-                        // Pokusaj automatskog otvaranja (moze biti blokirano)
-                        window.open(videoUrl, '_blank');
+                        log('[INFO] Automatsko preusmjeravanje na video za 1.5s...');
+                        setTimeout(function() {
+                            window.location.href = videoUrl;
+                        }, 1500);
                     } else if (data.action === 'STOP') {
-                        log('🛑 Room closed by creator');
+                        log('[INFO] Room closed by creator');
                         alert('Room has been closed');
                     }
                 });
 
-                log('✅ Subscribed to room: ' + roomCode);
+                log('[SUCCESS] Subscribed to room: ' + roomCode);
             }, function(error) {
-                log('❌ WebSocket error: ' + error);
+                log('[ERROR] WebSocket error: ' + error);
                 updateStatus(false);
             });
         }
@@ -320,19 +453,19 @@
         function disconnectWebSocket() {
             if (stompClient) {
                 stompClient.disconnect();
-                log('🔌 Disconnected from WebSocket');
+                log('[INFO] Disconnected from WebSocket');
                 updateStatus(false);
             }
         }
 
         async function playVideo() {
             if (!jwtToken) {
-                log('❌ Please login first');
+                log('[ERROR] Please login first');
                 return;
             }
 
             if (!currentRoomCode) {
-                log('❌ Please create or join a room first');
+                log('[ERROR] Please create or join a room first');
                 return;
             }
 
@@ -348,18 +481,17 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    log('✅ Video broadcast to all members');
+                    log('[SUCCESS] Video broadcast to all members');
                 } else {
-                    log('❌ Play video failed: ' + JSON.stringify(data));
+                    log('[ERROR] Play video failed: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                log('❌ Play video error: ' + error.message);
+                log('[ERROR] Play video error: ' + error.message);
             }
         }
 
-        // Initialize
-        log('🎬 Watch Party Test Page Ready');
-        log('📝 Instructions:');
+        log('[READY] Watch Party Test Page Ready');
+        log('[INFO] Instructions:');
         log('1. Login with your credentials');
         log('2. Create a room or join existing room');
         log('3. Connect to WebSocket with room code');

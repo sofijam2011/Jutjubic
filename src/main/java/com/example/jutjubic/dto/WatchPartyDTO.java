@@ -3,9 +3,6 @@ package com.example.jutjubic.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * DTO za Watch Party sobu
- */
 public class WatchPartyDTO {
 
     private Long id;
@@ -23,7 +20,6 @@ public class WatchPartyDTO {
 
     public WatchPartyDTO() {}
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -120,9 +116,6 @@ public class WatchPartyDTO {
         this.members = members;
     }
 
-    /**
-     * DTO za člana sobe
-     */
     public static class MemberDTO {
         private Long userId;
         private String username;
@@ -138,7 +131,6 @@ public class WatchPartyDTO {
             this.isOnline = isOnline;
         }
 
-        // Getters and Setters
         public Long getUserId() {
             return userId;
         }

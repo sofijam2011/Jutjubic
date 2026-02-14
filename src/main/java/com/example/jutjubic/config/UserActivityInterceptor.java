@@ -20,13 +20,13 @@ public class UserActivityInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        if (authentication != null && authentication.isAuthenticated() 
+
+        if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
             String username = authentication.getName();
             activeUserService.registerUserActivity(username);
         }
-        
+
         return true;
     }
 }

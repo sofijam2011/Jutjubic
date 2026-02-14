@@ -35,7 +35,7 @@ const VideoPlayer = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        
+
         loadVideo();
         loadLikeStatus();
 
@@ -187,7 +187,7 @@ const VideoPlayer = () => {
 
     const handleLike = async () => {
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
             alert('⚠️ Morate biti prijavljeni da biste lajkovali video!\n\nKliknite "Prijavi se" u meniju.');
             return;
@@ -359,10 +359,8 @@ const VideoPlayer = () => {
                 )}
             </div>
 
-            {/* Live čet */}
-            <LiveChat videoId={id} />
+            {streamingInfo?.isScheduled && <LiveChat videoId={id} />}
 
-            {/* Sekcija za komentare */}
             <CommentSection videoId={id} />
         </div>
     );

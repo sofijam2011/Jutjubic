@@ -10,7 +10,6 @@ const getAuthHeader = () => {
 };
 
 const commentService = {
-    // dobavi komentare sa paginacijom
     getComments: async (videoId, page = 0, size = 10) => {
         const response = await axios.get(`${API_URL}/${videoId}/comments?page=${page}&size=${size}`, {
             headers: getAuthHeader()
@@ -18,7 +17,6 @@ const commentService = {
         return response.data;
     },
 
-    // dodaj komentar
     addComment: async (videoId, text) => {
         const response = await axios.post(
             `${API_URL}/${videoId}/comments`,
@@ -28,7 +26,6 @@ const commentService = {
         return response.data;
     },
 
-    // broj komentara
     getCommentCount: async (videoId) => {
         const response = await axios.get(`${API_URL}/${videoId}/comments/count`, {
             headers: getAuthHeader()
@@ -36,7 +33,6 @@ const commentService = {
         return response.data.count;
     },
 
-    // rate limit status
     getRateLimitStatus: async (videoId) => {
         try {
             const response = await axios.get(

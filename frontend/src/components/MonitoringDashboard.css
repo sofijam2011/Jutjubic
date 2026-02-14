@@ -4,7 +4,6 @@
     color: #333;
 }
 
-/* Navbar */
 .monitoring-navbar {
     padding: 15px 40px;
     background: #4A5A4C;
@@ -45,23 +44,25 @@
 }
 
 .navbar-button {
-    padding: 12px 24px;
-    background-color: #3A4A3C;
-    color: white;
-    border: none;
-    border-radius: 8px;
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--emerald-bright);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    transition: all var(--transition);
 }
 
 .navbar-button:hover {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: var(--text);
     transform: translateY(-2px);
-    background-color: #2A3A2C;
 }
 
-/* Header */
 .monitoring-header {
     text-align: center;
     padding: 3rem 2rem 2rem;
@@ -83,7 +84,6 @@
     margin-top: 0.5rem;
 }
 
-/* Alert */
 .alert {
     margin: 2rem auto;
     max-width: 800px;
@@ -125,25 +125,27 @@
 }
 
 .btn-primary {
-    padding: 0.8rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    border-radius: 8px;
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--emerald-bright);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    transition: all var(--transition);
     display: inline-block;
     text-decoration: none;
 }
 
 .btn-primary:hover {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: var(--text);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
 }
 
-/* Tabs */
 .monitoring-tabs {
     display: flex;
     justify-content: center;
@@ -153,36 +155,37 @@
 }
 
 .tab-button {
-    padding: 0.8rem 1.5rem;
-    background: white;
-    border: 2px solid #6D8B74;
-    color: #4A5A4C;
-    border-radius: 8px;
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--emerald-bright);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    transition: all var(--transition);
 }
 
 .tab-button:hover {
-    background: #f0f4f0;
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: var(--text);
     transform: translateY(-2px);
 }
 
 .tab-button.active {
-    background: #6D8B74;
-    color: white;
-    box-shadow: 0 4px 12px rgba(109, 139, 116, 0.3);
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: var(--text);
 }
 
-/* Content */
 .monitoring-content {
     padding: 2rem;
     max-width: 1600px;
     margin: 0 auto;
 }
 
-/* Overview Section */
 .overview-section {
     display: flex;
     flex-direction: column;
@@ -240,7 +243,6 @@
     color: #6D8B74;
 }
 
-/* Info Section */
 .info-section {
     background: white;
     color: #333;
@@ -270,7 +272,6 @@
     color: #4A5A4C;
 }
 
-/* Panels Section */
 .panels-section {
     background: white;
     color: #333;
@@ -331,7 +332,6 @@
     height: 450px;
 }
 
-/* Explanation Box */
 .explanation-box {
     margin-top: 2rem;
     padding: 1.5rem;
@@ -370,7 +370,6 @@
     color: #4A5A4C;
 }
 
-/* Full Dashboard */
 .full-dashboard-section {
     background: white;
     color: #333;
@@ -402,27 +401,6 @@
     text-align: center;
 }
 
-.btn-primary {
-    padding: 0.8rem 2rem;
-    background: #6D8B74;
-    border: none;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    text-decoration: none;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    background: #5C7A63;
-    box-shadow: 0 4px 12px rgba(109, 139, 116, 0.3);
-}
-
-/* Footer */
 .monitoring-footer {
     text-align: center;
     padding: 2rem;
@@ -460,7 +438,6 @@
     opacity: 0.5;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .monitoring-header h1 {
         font-size: 1.8rem;

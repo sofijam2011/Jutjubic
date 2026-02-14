@@ -53,7 +53,6 @@ public class CommentController {
             @Valid @RequestBody Map<String, String> request,
             Authentication authentication) {
 
-        // provera autentifikacije
         if (authentication == null || authentication.getName() == null) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Morate biti prijavljeni da biste ostavili komentar");

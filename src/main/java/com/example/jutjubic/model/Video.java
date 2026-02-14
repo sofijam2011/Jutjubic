@@ -55,6 +55,12 @@ public class Video {
     @Column(name = "duration_seconds")
     private Long durationSeconds;
 
+    @Column(name = "transcoded_video_path")
+    private String transcodedVideoPath;
+
+    @Column(name = "transcoding_status")
+    private String transcodingStatus = "PENDING";
+
     @Column(name = "thumbnail_compressed")
     private Boolean thumbnailCompressed = false;
 
@@ -74,7 +80,6 @@ public class Video {
 
     public Video() {}
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -147,7 +152,6 @@ public class Video {
         this.location = location;
     }
 
-    // DODATO - Getters/Setters za latitude i longitude
     public Double getLatitude() {
         return latitude;
     }
@@ -196,6 +200,22 @@ public class Video {
         this.tags = tags;
     }
 
+    public String getTranscodedVideoPath() {
+        return transcodedVideoPath;
+    }
+
+    public void setTranscodedVideoPath(String transcodedVideoPath) {
+        this.transcodedVideoPath = transcodedVideoPath;
+    }
+
+    public String getTranscodingStatus() {
+        return transcodingStatus;
+    }
+
+    public void setTranscodingStatus(String transcodingStatus) {
+        this.transcodingStatus = transcodingStatus;
+    }
+
     public Boolean getThumbnailCompressed() {
         return thumbnailCompressed;
     }
@@ -220,7 +240,6 @@ public class Video {
         this.thumbnailCompressionDate = thumbnailCompressionDate;
     }
 
-    // Helper metoda za uploadDate (jer service koristi ovo ime)
     public LocalDateTime getUploadDate() {
         return createdAt;
     }
@@ -229,7 +248,6 @@ public class Video {
         this.createdAt = uploadDate;
     }
 
-    // Helper metoda za thumbnailUrl (jer DTO koristi ovo ime)
     public String getThumbnailUrl() {
         return thumbnailPath;
     }

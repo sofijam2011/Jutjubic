@@ -2,15 +2,12 @@ package com.example.jutjubic.dto;
 
 import java.io.Serializable;
 
-/**
- * Poruka koja se šalje u RabbitMQ za transcoding videa
- */
 public class TranscodingMessage implements Serializable {
 
     private Long videoId;
-    private String originalVideoPath; // Putanja do originalnog videa
-    private String outputVideoPath;   // Putanja gde će biti sačuvan transkodovani video
-    private TranscodingParams params;  // Parametri za transcoding
+    private String originalVideoPath;
+    private String outputVideoPath;
+    private TranscodingParams params;
 
     public TranscodingMessage() {}
 
@@ -21,7 +18,6 @@ public class TranscodingMessage implements Serializable {
         this.params = params;
     }
 
-    // Getters and Setters
     public Long getVideoId() {
         return videoId;
     }
@@ -64,16 +60,13 @@ public class TranscodingMessage implements Serializable {
                 '}';
     }
 
-    /**
-     * Parametri za FFmpeg transcoding
-     */
     public static class TranscodingParams implements Serializable {
-        private String codec;          // npr. "libx264"
-        private String resolution;     // npr. "1280x720"
-        private String bitrate;        // npr. "2000k"
-        private String audioCodec;     // npr. "aac"
-        private String audioBitrate;   // npr. "128k"
-        private String format;         // npr. "mp4"
+        private String codec;
+        private String resolution;
+        private String bitrate;
+        private String audioCodec;
+        private String audioBitrate;
+        private String format;
 
         public TranscodingParams() {}
 
@@ -86,7 +79,6 @@ public class TranscodingMessage implements Serializable {
             this.format = format;
         }
 
-        // Default 720p preset
         public static TranscodingParams default720p() {
             return new TranscodingParams(
                     "libx264",
@@ -98,7 +90,6 @@ public class TranscodingMessage implements Serializable {
             );
         }
 
-        // Default 1080p preset
         public static TranscodingParams default1080p() {
             return new TranscodingParams(
                     "libx264",
@@ -110,7 +101,6 @@ public class TranscodingMessage implements Serializable {
             );
         }
 
-        // Getters and Setters
         public String getCodec() {
             return codec;
         }

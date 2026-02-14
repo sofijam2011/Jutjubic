@@ -71,10 +71,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * Logout endpoint - uklanja korisnika iz liste aktivnih korisnika
-     * VAŽNO: Ovaj endpoint uklanja korisnika ODMAH iz active_users_count metrike
-     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         try {

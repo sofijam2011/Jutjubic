@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-//@Component
 public class VideoTestDataGenerator implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoTestDataGenerator.class);

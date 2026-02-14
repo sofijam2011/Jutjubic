@@ -12,9 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Kontroler za monitoring transcoding sistema
- */
 @RestController
 @RequestMapping("/api/transcoding")
 public class TranscodingController {
@@ -25,21 +22,16 @@ public class TranscodingController {
     @Autowired(required = false)
     private RabbitAdmin rabbitAdmin;
 
-    /**
-     * Health check endpoint za transcoding sistem
-     */
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> getHealth() {
         Map<String, Object> health = new HashMap<>();
 
-        // Provera FFmpeg-a
         boolean ffmpegInstalled = ffmpegService.isFFmpegInstalled();
         health.put("ffmpeg", Map.of(
                 "installed", ffmpegInstalled,
                 "status", ffmpegInstalled ? "OK" : "NOT_INSTALLED"
         ));
 
-        // Provera RabbitMQ
         boolean rabbitmqConnected = false;
         try {
             if (rabbitAdmin != null) {
@@ -69,16 +61,12 @@ public class TranscodingController {
             ));
         }
 
-        // Overall status
         boolean healthy = ffmpegInstalled && rabbitmqConnected;
         health.put("status", healthy ? "HEALTHY" : "UNHEALTHY");
 
         return ResponseEntity.ok(health);
     }
 
-    /**
-     * Info endpoint sa instrukcijama
-     */
     @GetMapping("/info")
     public ResponseEntity<Map<String, Object>> getInfo() {
         Map<String, Object> info = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.example.jutjubic.controller;
 
 import com.example.jutjubic.dto.VideoResponse;
+import com.example.jutjubic.listener.WebSocketEventListener;
 import com.example.jutjubic.model.User;
 import com.example.jutjubic.model.Video;
 import com.example.jutjubic.repository.UserRepository;
@@ -32,6 +33,9 @@ public class VideoController {
 
     @Autowired
     private VideoService videoService;
+
+    @Autowired
+    private WebSocketEventListener webSocketEventListener;
 
     @Autowired
     private UserRepository userRepository;
@@ -204,5 +208,11 @@ public class VideoController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/{id}/viewers")
+    public ResponseEntity<Map<String, Object>> getViewerCount(@PathVariable Long id) {
+        int count = webSocketEventListener.getViewerCount(id);
+        return ResponseEntity.ok(Map.of("videoId", id, "viewerCount", count));
     }
 }

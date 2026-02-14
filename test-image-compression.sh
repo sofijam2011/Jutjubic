@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# ============================================================
-# Test: Periodična kompresija thumbnail slika (starijih od 30 dana)
-# ============================================================
 
 BASE="http://localhost:8081"
 
@@ -16,8 +13,10 @@ echo ""
 
 echo "=== 3. SIMULACIJA: Postavljam created_at na 31 dan unazad ==="
 echo "(Scheduler trazi slike starije od 30 dana - simuliramo stare videe)"
-psql -U postgres -d jutjubic_db -c \
+PAGER=cat psql -U postgres -d jutjubic_db -c \
   "UPDATE public.videos SET created_at = NOW() - INTERVAL '31 days', thumbnail_compressed = false, thumbnail_compressed_path = null, thumbnail_compression_date = null;"
+echo "Ciscenje starih kompresovanih fajlova iz prethodnih testova..."
+rm -f ./uploads/thumbnails/compressed/*_compressed.jpg 2>/dev/null
 echo "Done."
 echo ""
 
@@ -72,7 +71,7 @@ done
 echo ""
 
 echo "=== 10. PROVJERA U BAZI (thumbnail_compressed = true) ==="
-psql -U postgres -d jutjubic_db -c \
+PAGER=cat psql -U postgres -d jutjubic_db -c \
   "SELECT id, title, thumbnail_compressed, thumbnail_compression_date FROM public.videos ORDER BY id;"
 
 echo ""

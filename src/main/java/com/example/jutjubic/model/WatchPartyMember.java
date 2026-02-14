@@ -3,9 +3,6 @@ package com.example.jutjubic.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Član Watch Party sobe
- */
 @Entity
 @Table(name = "watch_party_members")
 public class WatchPartyMember {
@@ -38,7 +35,6 @@ public class WatchPartyMember {
         this.user = user;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

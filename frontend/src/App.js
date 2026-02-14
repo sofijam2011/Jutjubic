@@ -28,10 +28,8 @@ function App() {
                     <Route path="/video/:id" element={<VideoPlayer />} />
                     <Route path="/user/:id" element={<UserProfile />} />
 
-                    {/* Ruta za mapu */}
                     <Route path="/map" element={<VideoMap />} />
-                    
-                    {/* Ruta za monitoring dashboard */}
+
                     <Route path="/monitoring" element={<MonitoringDashboard />} />
 
                     <Route

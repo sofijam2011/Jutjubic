@@ -39,10 +39,19 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query("SELECT COUNT(v) FROM Video v WHERE v.latitude IS NOT NULL AND v.longitude IS NOT NULL")
     long countVideosWithLocation();
 
-    // Metode za kompresiju slika
     List<Video> findByThumbnailCompressedFalseAndCreatedAtBefore(LocalDateTime date);
 
     long countByThumbnailCompressed(Boolean compressed);
 
     long countByThumbnailCompressedFalseAndCreatedAtBefore(LocalDateTime date);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Video v SET v.transcodedVideoPath = :path, v.transcodingStatus = :status WHERE v.id = :id")
+    void updateTranscodingResult(@Param("id") Long id, @Param("path") String path, @Param("status") String status);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Video v SET v.transcodingStatus = :status WHERE v.id = :id")
+    void updateTranscodingStatus(@Param("id") Long id, @Param("status") String status);
 }

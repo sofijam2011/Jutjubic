@@ -13,6 +13,7 @@ import com.example.jutjubic.repository.VideoRepository;
 import com.example.jutjubic.repository.VideoViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,11 +52,33 @@ public class VideoService {
     @Autowired
     private UploadEventProducer uploadEventProducer;
 
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Transactional(timeout = 10)
+    private VideoService self() {
+        return applicationContext.getBean(VideoService.class);
+    }
+
     public Video uploadVideo(String title, String description, List<String> tagNames,
                              MultipartFile thumbnail, MultipartFile video,
-                             String location, Double latitude, Double longitude, User user,  LocalDateTime scheduledDateTime, Long durationSeconds) {
+                             String location, Double latitude, Double longitude, User user, LocalDateTime scheduledDateTime, Long durationSeconds) {
+        long videoSize = video.getSize();
+        Video savedVideo = self().saveVideoTransactional(
+                title, description, tagNames, thumbnail, video,
+                location, latitude, longitude, user, scheduledDateTime, durationSeconds
+        );
+
+        sendTranscodingJob(savedVideo);
+        sendUploadEvents(savedVideo, videoSize);
+
+        return savedVideo;
+    }
+
+    @Transactional(timeout = 300)
+    public Video saveVideoTransactional(String title, String description, List<String> tagNames,
+                                        MultipartFile thumbnail, MultipartFile video,
+                                        String location, Double latitude, Double longitude, User user,
+                                        LocalDateTime scheduledDateTime, Long durationSeconds) {
         try {
             String thumbnailPath = fileStorageService.storeThumbnail(thumbnail);
             String videoPath = fileStorageService.storeVideo(video);
@@ -70,6 +93,7 @@ public class VideoService {
             videoEntity.setLongitude(longitude);
             videoEntity.setUser(user);
             videoEntity.setViewCount(0L);
+            videoEntity.setTranscodingStatus("PENDING");
 
             if (scheduledDateTime != null) {
                 videoEntity.setScheduledDateTime(scheduledDateTime);
@@ -98,21 +122,11 @@ public class VideoService {
             }
             videoEntity.setTags(tags);
 
-             //Thread.sleep(15000);
-
             Video savedVideo = videoRepository.save(videoEntity);
 
             cacheService.cacheThumbnail(savedVideo.getId(), thumbnail);
-
             mapTileService.updateTileForNewVideo(savedVideo);
-
             fileStorageService.clearUploadTracking();
-
-            // Šaljem transcoding job u RabbitMQ queue
-            sendTranscodingJob(savedVideo);
-
-            // Šaljem upload event
-            sendUploadEvents(savedVideo, video.getSize());
 
             return savedVideo;
 
@@ -157,7 +171,6 @@ public class VideoService {
             throw new IllegalArgumentException("Video not found with id: " + videoId);
         }
 
-        // Cuvanje pojedinačnog pregleda sa timestamp-om za ETL pipeline
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new IllegalArgumentException("Video not found with id: " + videoId));
         VideoView videoView = new VideoView(video, LocalDateTime.now());
@@ -189,6 +202,8 @@ public class VideoService {
         response.setScheduledDateTime(video.getScheduledDateTime());
         response.setIsScheduled(video.getIsScheduled());
         response.setDurationSeconds(video.getDurationSeconds());
+        response.setTranscodedVideoPath(video.getTranscodedVideoPath());
+        response.setTranscodingStatus(video.getTranscodingStatus());
         return response;
     }
 
@@ -206,19 +221,13 @@ public class VideoService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Šalje transcoding job u RabbitMQ queue nakon što je video uploadovan
-     */
     private void sendTranscodingJob(Video video) {
         try {
-            // Kreiram putanju za transkodovani video
             String originalPath = video.getVideoPath();
             String outputPath = generateTranscodedVideoPath(originalPath);
 
-            // Koristim predefinisane parametre (720p)
             TranscodingMessage.TranscodingParams params = TranscodingMessage.TranscodingParams.default720p();
 
-            // Kreiram poruku
             TranscodingMessage message = new TranscodingMessage(
                     video.getId(),
                     originalPath,
@@ -226,25 +235,19 @@ public class VideoService {
                     params
             );
 
-            // Šaljem u queue
             transcodingProducer.sendTranscodingJob(message);
 
             System.out.println("✅ Transcoding job poslat za video ID: " + video.getId());
         } catch (Exception e) {
             System.err.println("⚠️ Greška prilikom slanja transcoding job-a: " + e.getMessage());
             e.printStackTrace();
-            // Ne bacamo exception da ne bi prekinuli upload proces
         }
     }
 
-    /**
-     * Šalje upload event u JSON i Protobuf formatima
-     */
     private void sendUploadEvents(Video video, long fileSize) {
         try {
             String username = video.getUser().getUsername();
 
-            // JSON format
             UploadEvent jsonEvent = new UploadEvent(
                 video.getId(),
                 video.getTitle(),
@@ -253,7 +256,6 @@ public class VideoService {
             );
             uploadEventProducer.sendJsonEvent(jsonEvent);
 
-            // Protobuf format
             UploadEventProto.UploadEvent protoEvent = UploadEventProto.UploadEvent.newBuilder()
                 .setVideoId(video.getId())
                 .setNaziv(video.getTitle())
@@ -270,10 +272,6 @@ public class VideoService {
         }
     }
 
-    /**
-     * Generiše putanju za transkodovani video
-     * Primer: uploads/videos/video_123.mp4 -> uploads/videos/transcoded/video_123_720p.mp4
-     */
     private String generateTranscodedVideoPath(String originalPath) {
         File originalFile = new File(originalPath);
         String parentPath = originalFile.getParent();
@@ -281,7 +279,6 @@ public class VideoService {
         String nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
         String extension = fileName.substring(fileName.lastIndexOf('.'));
 
-        // Kreiram transcoded direktorijum
         String transcodedDir = parentPath + File.separator + "transcoded";
         new File(transcodedDir).mkdirs();
 

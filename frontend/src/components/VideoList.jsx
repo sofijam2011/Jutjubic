@@ -58,7 +58,7 @@ const VideoList = () => {
                 <div className="video-grid">
                     {videos.map(video => {
                         const thumbnailUrl = videoService.getThumbnailUrl(video.id);
-                        
+
                         return (
                             <div
                                 key={video.id}
@@ -80,10 +80,10 @@ const VideoList = () => {
 
                                 <div className="video-info">
                                     <h3>{video.title}</h3>
-                                    {video.isScheduled && 
-                                     video.scheduledDateTime && 
+                                    {video.isScheduled &&
+                                     video.scheduledDateTime &&
                                      new Date(video.scheduledDateTime) <= new Date() &&
-                                     video.durationSeconds && 
+                                     video.durationSeconds &&
                                      (() => {
                                         const now = new Date();
                                         const scheduledTime = new Date(video.scheduledDateTime);

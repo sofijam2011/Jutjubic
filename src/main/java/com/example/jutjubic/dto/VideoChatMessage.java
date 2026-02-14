@@ -8,11 +8,13 @@ public class VideoChatMessage {
     private Long videoId;
     private LocalDateTime timestamp;
     private MessageType type;
+    private Integer viewerCount;
 
     public enum MessageType {
-        JOIN,    // Korisnik se pridružio
-        CHAT,    // Obična poruka
-        LEAVE    // Korisnik napustio
+        JOIN,
+        CHAT,
+        LEAVE,
+        VIEWER_COUNT
     }
 
     public VideoChatMessage() {}
@@ -39,4 +41,7 @@ public class VideoChatMessage {
 
     public MessageType getType() { return type; }
     public void setType(MessageType type) { this.type = type; }
+
+    public Integer getViewerCount() { return viewerCount; }
+    public void setViewerCount(Integer viewerCount) { this.viewerCount = viewerCount; }
 }

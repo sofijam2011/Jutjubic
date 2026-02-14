@@ -1,18 +1,15 @@
 #!/bin/bash
 
-# 🧪 Quick Test Script - Testira sve funkcionalnosti
 
 echo "🚀 Jutjubic - Quick Test"
 echo "========================"
 echo ""
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+GREEN='\33[0;32m'
+RED='\33[0;31m'
+YELLOW='\33[1;33m'
+NC='\33[0m'
 
-# Test Spring Boot
 echo "1️⃣  Testing Spring Boot..."
 if curl -s http://localhost:8081/actuator/health > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Spring Boot is running${NC}"
@@ -23,7 +20,6 @@ else
 fi
 echo ""
 
-# Test FFmpeg
 echo "2️⃣  Testing FFmpeg..."
 if command -v ffmpeg &> /dev/null; then
     VERSION=$(ffmpeg -version 2>&1 | head -1 | cut -d' ' -f3)
@@ -33,7 +29,6 @@ else
 fi
 echo ""
 
-# Test Image Compression
 echo "3️⃣  Testing Image Compression..."
 RESPONSE=$(curl -s http://localhost:8081/api/compression/info)
 if echo "$RESPONSE" | grep -q "compressionQuality"; then
@@ -45,7 +40,6 @@ else
 fi
 echo ""
 
-# Test Compression Stats
 echo "4️⃣  Testing Compression Stats..."
 STATS=$(curl -s http://localhost:8081/api/compression/stats)
 TOTAL=$(echo "$STATS" | grep -o '"totalVideos":[0-9]*' | cut -d':' -f2)
@@ -54,7 +48,6 @@ echo "   Total Videos: ${TOTAL:-0}"
 echo "   Compressed: ${COMPRESSED:-0}"
 echo ""
 
-# Test Watch Party
 echo "5️⃣  Testing Watch Party..."
 WP_RESPONSE=$(curl -s http://localhost:8081/api/watchparty/public)
 if [ "$WP_RESPONSE" == "[]" ] || echo "$WP_RESPONSE" | grep -q "roomCode"; then
@@ -65,7 +58,6 @@ else
 fi
 echo ""
 
-# Test WebSocket
 echo "6️⃣  Testing WebSocket..."
 WS_INFO=$(curl -s http://localhost:8081/ws/info)
 if echo "$WS_INFO" | grep -q "websocket"; then
@@ -76,7 +68,6 @@ else
 fi
 echo ""
 
-# Test RabbitMQ (Transcoding)
 echo "7️⃣  Testing RabbitMQ (Transcoding)..."
 if curl -s http://localhost:15672 > /dev/null 2>&1; then
     echo -e "${GREEN}✅ RabbitMQ is running${NC}"
@@ -88,7 +79,6 @@ else
 fi
 echo ""
 
-# Summary
 echo "========================"
 echo "📊 Summary"
 echo "========================"

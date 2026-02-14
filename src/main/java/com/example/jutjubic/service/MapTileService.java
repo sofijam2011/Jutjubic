@@ -116,12 +116,10 @@ public class MapTileService {
                     .collect(Collectors.toList());
 
         } else if (zoomLevel >= 6) {
-            // ===== ZOOM 6-8 (REGION) - Segmenti od 3° (~300km) =====
             logger.info("★★★ ZOOM {} (REGION) - Segmenti {}° ★★★", zoomLevel, SEGMENT_SIZE_ZOOM_6);
             return clusterToSingleRepresentative(videos, SEGMENT_SIZE_ZOOM_6);
 
         } else {
-            // ===== ZOOM 3-5 (KONTINENT) - OGROMNI segmenti od 15° (~1500km) =====
             logger.info("★★★ ZOOM {} (KONTINENT) - Segmenti {}° ★★★", zoomLevel, SEGMENT_SIZE_ZOOM_3);
             return clusterToSingleRepresentative(videos, SEGMENT_SIZE_ZOOM_3);
         }

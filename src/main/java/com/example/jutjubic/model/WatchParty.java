@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Watch Party soba za zajedničko gledanje videa
- */
 @Entity
 @Table(name = "watch_parties")
 public class WatchParty {
@@ -18,26 +15,26 @@ public class WatchParty {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String roomCode; // Jedinstveni kod za pristup sobi (npr: "ABCD1234")
+    private String roomCode;
 
     @Column(nullable = false)
-    private String name; // Ime sobe
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
-    private User creator; // Kreator sobe
+    private User creator;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "is_public")
-    private Boolean isPublic = true; // Da li je soba javno dostupna
+    private Boolean isPublic = true;
 
     @Column(name = "current_video_id")
-    private Long currentVideoId; // Trenutni video koji se gleda
+    private Long currentVideoId;
 
     @Column(name = "is_active")
-    private Boolean isActive = true; // Da li je soba aktivna
+    private Boolean isActive = true;
 
     @OneToMany(mappedBy = "watchParty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WatchPartyMember> members = new HashSet<>();
@@ -53,14 +50,10 @@ public class WatchParty {
         this.isPublic = isPublic;
     }
 
-    /**
-     * Generiše jedinstveni kod sobe (8 karaktera)
-     */
     private String generateRoomCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

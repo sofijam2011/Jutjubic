@@ -59,7 +59,6 @@ public class CommentRateLimitService {
             }
         }
 
-        // Fallback na bazu
         LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(TIME_WINDOW_HOURS);
         List<CommentAttempt> recentAttempts = commentAttemptRepository
                 .findRecentAttemptsByUser(userId, oneHourAgo);
@@ -99,7 +98,7 @@ public class CommentRateLimitService {
         commentAttemptRepository.save(attempt);
     }
 
-    @Scheduled(fixedRate = 3600000) // svaki sat
+    @Scheduled(fixedRate = 3600000)
     @Transactional
     public void cleanOldAttempts() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);

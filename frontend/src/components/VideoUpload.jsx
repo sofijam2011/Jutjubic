@@ -12,7 +12,6 @@ const VideoUpload = () => {
         location: '',
         latitude: '',
         longitude: '',
-        location: '',
         scheduledDateTime: '',
         isScheduled: false
     });

@@ -23,7 +23,6 @@ public class SerializationBenchmarkService {
     public Map<String, Object> izvrsiPoredjenje() throws Exception {
         List<UploadEvent> jsonEventovi = generisiTestEventove();
 
-        // --- JSON benchmark ---
         long ukupnoJsonSerijalizacija = 0;
         long ukupnoJsonDeserijalizacija = 0;
         long ukupnoJsonVelicina = 0;
@@ -45,7 +44,6 @@ public class SerializationBenchmarkService {
             ukupnoJsonDeserijalizacija += System.nanoTime() - start;
         }
 
-        // --- Protobuf benchmark ---
         long ukupnoProtobufSerijalizacija = 0;
         long ukupnoProtobufDeserijalizacija = 0;
         long ukupnoProtobufVelicina = 0;
@@ -69,7 +67,6 @@ public class SerializationBenchmarkService {
             ukupnoProtobufDeserijalizacija += System.nanoTime() - start;
         }
 
-        // --- Rezultati ---
         long jsonAvgSer = ukupnoJsonSerijalizacija / BROJ_PORUKA;
         long jsonAvgDeser = ukupnoJsonDeserijalizacija / BROJ_PORUKA;
         long jsonAvgVelicina = ukupnoJsonVelicina / BROJ_PORUKA;
@@ -126,7 +123,7 @@ public class SerializationBenchmarkService {
             eventovi.add(new UploadEvent(
                 (long) (i + 1),
                 naslovi[i % naslovi.length] + " " + (i + 1),
-                (long) (1024 * 1024 * (10 + i % 500)),   // 10MB do 509MB
+                (long) (1024 * 1024 * (10 + i % 500)),
                 autori[i % autori.length],
                 LocalDateTime.now().minusMinutes(i)
             ));

@@ -31,7 +31,6 @@ public class VideoMap {
         this.uploaderName = uploaderName;
     }
 
-    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

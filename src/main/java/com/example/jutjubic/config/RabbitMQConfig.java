@@ -15,24 +15,18 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String VIDEO_TRANSCODING_QUEUE = "video.transcoding.queue";
-    public static final String VIDEO_TRANSCODING_DLQ = "video.transcoding.dlq"; // Dead Letter Queue
+    public static final String VIDEO_TRANSCODING_DLQ = "video.transcoding.dlq";
     public static final String VIDEO_UPLOAD_JSON_QUEUE = "video.upload.json.queue";
     public static final String VIDEO_UPLOAD_PROTOBUF_QUEUE = "video.upload.protobuf.queue";
 
-    /**
-     * Kreira queue za transcoding sa exactly-once delivery garantijom
-     */
     @Bean
     public Queue videoTranscodingQueue() {
         return QueueBuilder.durable(VIDEO_TRANSCODING_QUEUE)
-                .withArgument("x-dead-letter-exchange", "") // Default exchange
+                .withArgument("x-dead-letter-exchange", "")
                 .withArgument("x-dead-letter-routing-key", VIDEO_TRANSCODING_DLQ)
                 .build();
     }
 
-    /**
-     * Dead Letter Queue - za poruke koje nisu uspešno obrađene
-     */
     @Bean
     public Queue deadLetterQueue() {
         return QueueBuilder.durable(VIDEO_TRANSCODING_DLQ).build();
@@ -48,25 +42,16 @@ public class RabbitMQConfig {
         return QueueBuilder.durable(VIDEO_UPLOAD_PROTOBUF_QUEUE).build();
     }
 
-    /**
-     * RabbitAdmin - potreban za upravljanje queue-ovima i health check
-     */
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory);
     }
 
-    /**
-     * JSON message converter
-     */
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
-    /**
-     * RabbitTemplate sa JSON converter-om
-     */
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -74,10 +59,6 @@ public class RabbitMQConfig {
         return template;
     }
 
-    /**
-     * Listener container factory sa acknowledgment mode MANUAL
-     * Ovo omogućava exactly-once delivery - poruka se ne briše dok ne potvrdimo da je uspešno obrađena
-     */
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory) {
@@ -85,7 +66,7 @@ public class RabbitMQConfig {
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(jsonMessageConverter());
         factory.setAcknowledgeMode(org.springframework.amqp.core.AcknowledgeMode.MANUAL);
-        factory.setPrefetchCount(1); // Svaki consumer uzima po 1 poruku odjednom
+        factory.setPrefetchCount(1);
         return factory;
     }
 }

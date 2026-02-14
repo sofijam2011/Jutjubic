@@ -15,7 +15,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <h1 className="navbar-logo" onClick={() => navigate('/')}>
-                🎥 Jutjubic
+                Jutjubić
             </h1>
 
             <div className="navbar-links">

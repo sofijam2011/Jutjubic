@@ -28,13 +28,12 @@ public class ETLService {
     @Autowired
     private PopularVideoRepository popularVideoRepository;
 
-    
+
     @Transactional
     public void runETLPipeline() {
         logger.info("Starting ETL Pipeline at {}", LocalDateTime.now());
 
         try {
-            // Extract Izvlačenje podataka o pregledima iz poslednjih 7 dana
             LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
             List<VideoView> recentViews = videoViewRepository.findViewsSince(sevenDaysAgo);
             logger.info("Extracted {} views from last 7 days", recentViews.size());
@@ -44,17 +43,14 @@ public class ETLService {
                 return;
             }
 
-            // Transform Grupisanje i računanje popularity score
             Map<Video, Double> popularityScores = calculatePopularityScores(recentViews);
             logger.info("Calculated popularity scores for {} videos", popularityScores.size());
 
-            // Sortiranje videa po popularity score
             List<Map.Entry<Video, Double>> sortedVideos = popularityScores.entrySet().stream()
                     .sorted(Map.Entry.<Video, Double>comparingByValue().reversed())
                     .limit(3)
                     .collect(Collectors.toList());
 
-            // Load Čuvanje rezultata u bazi
             LocalDateTime pipelineRunTime = LocalDateTime.now();
             int rank = 1;
 
@@ -78,7 +74,7 @@ public class ETLService {
         }
     }
 
-    
+
     private Map<Video, Double> calculatePopularityScores(List<VideoView> views) {
         Map<Video, Double> scores = new HashMap<>();
         LocalDateTime now = LocalDateTime.now();
@@ -87,7 +83,6 @@ public class ETLService {
             Video video = view.getVideo();
             LocalDateTime viewTime = view.getViewedAt();
 
-            // Racunanje broja dana unazad
             long daysAgo = ChronoUnit.DAYS.between(viewTime.toLocalDate(), now.toLocalDate());
 
             double weight;

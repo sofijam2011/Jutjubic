@@ -41,7 +41,7 @@ public class LoginAttemptService {
         return failedAttempts >= MAX_ATTEMPTS;
     }
 
-    @Scheduled(fixedRate = 3600000) // Čisti svaki sat
+    @Scheduled(fixedRate = 3600000)
     @Transactional
     public void cleanOldAttempts() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);

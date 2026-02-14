@@ -36,7 +36,6 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {/* Navigation Bar */}
             <nav className="dashboard-navbar">
                 <h1
                     className="dashboard-logo"
@@ -80,7 +79,6 @@ const Dashboard = () => {
                 </div>
             </nav>
 
-            {/* Popular Videos Section */}
             {!loadingPopular && popularVideos.length > 0 && (
                 <div className="popular-videos-section">
                     <h2 className="section-title">
@@ -121,7 +119,6 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Video List */}
             <VideoList />
         </div>
     );

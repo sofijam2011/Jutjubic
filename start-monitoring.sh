@@ -3,21 +3,19 @@
 echo "🚀 Pokretanje Prometheus i Grafana..."
 echo ""
 
-# Kreiraj network ako ne postoji
 echo "📡 Kreiranje Docker network..."
 docker network create monitoring 2>/dev/null && echo "✅ Network 'monitoring' kreiran" || echo "✓ Network 'monitoring' već postoji"
 echo ""
 
-# Zaustavi i ukloni stare kontejnere ako postoje
 echo "🧹 Čišćenje starih kontejnera..."
 docker rm -f prometheus grafana 2>/dev/null && echo "✅ Stari kontejneri uklonjeni" || echo "✓ Nema starih kontejnera"
 echo ""
 
-# Pokreni Prometheus
 echo "📊 Pokrećem Prometheus..."
 docker run -d \
   --name prometheus \
   --network monitoring \
+  --add-host=host.docker.internal:host-gateway \
   -p 9090:9090 \
   -v "$(pwd)/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml" \
   --restart unless-stopped \
@@ -34,10 +32,8 @@ else
 fi
 echo ""
 
-# Sačekaj malo
 sleep 2
 
-# Pokreni Grafana
 echo "📈 Pokrećem Grafana..."
 docker run -d \
   --name grafana \
@@ -62,17 +58,14 @@ else
 fi
 echo ""
 
-# Sačekaj da se servisi podignu
 echo "⏳ Čekam da se servisi pokrenu (10 sekundi)..."
 sleep 10
 echo ""
 
-# Proveri status
 echo "🔍 Provera statusa kontejnera..."
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(NAMES|prometheus|grafana)"
 echo ""
 
-# Test pristupa
 echo "🧪 Testiranje pristupa..."
 
 if curl -s http://localhost:9090/-/ready > /dev/null 2>&1; then
