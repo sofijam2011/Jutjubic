@@ -47,3 +47,6 @@ build/
 
 ### Claude Code ###
 .claude/
+
+### Uploads (large binary files) ###
+uploads/
